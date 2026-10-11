@@ -9,7 +9,7 @@ the tree byte-identical.
 
 What it writes:
 
-- examples/prsn/{valid-v11, valid-v10-legacy, voice-v11}/   directory-form `.prsn` packages
+- examples/prsn/{valid-v11, valid-v10-legacy, voice-v11, fictional-v12}/   directory-form `.prsn` packages
 - conformance/prsn/<case>/ + rules.json                     one directory package per rule
 - conformance/container/*.prsn + cases.json                 ZIP-form container cases
 - examples/prsncap/minimal-depth.prsncap/                   tracking data + embedded template, re-sealed
@@ -189,6 +189,102 @@ def voice_package(root: Path) -> Pkg:
     return k
 
 
+PNG_BYTES = b"\x89PNG\r\n\x1a\n" + bytes(24)
+FICTIONAL = {"id": "urn:uuid:5a1e0000-0000-4000-8000-000000000012", "display_name": "Mira Example",
+             "kind": "fictional", "aliases": [], "links": [],
+             "rights": {"holder": "Example Studio", "license": "LicenseRef-example-character"},
+             "consent": {"vendors": ["example-vendor"]}}
+
+
+def entry_derivation(family: str, recipe: str, inputs: list[dict], models: list[dict] | None = None,
+                     params: dict | None = None, **extra) -> dict:
+    d = {"family": family, "recipe": {"id": recipe, "version": "1.0.0", "rank": 10},
+         "tool": {"name": "example-writer", "version": "1.0.0"}, "models": models or [], "inputs": inputs,
+         "params": params or {}, "determinism": "seeded-nonbitwise", "supersedes": None,
+         "license_constraints": [], **extra}
+    d["action_key"] = P.action_key(d)
+    return d
+
+
+def fictional_package(root: Path) -> Pkg:
+    """A spec 1.2 file for a fictional character (core.md §4, §5): authored anchors, an approved
+    synthetic sample one generation away from them, captions, a reference set, a descriptor,
+    a held-out split, a LoRA trained on the non-held-out samples, and a vendor reference."""
+    clean(root)
+    k = Pkg(root, spec="1.2")
+    k.top["looks"] = [{"id": "look-a", "label": "Model sheet v1", "era": "era-1", "default": True,
+                       "sessions": [], "state": {"hair_length": "long", "hair_colour": "teal",
+                                                 "clothing": "red jacket"}, "created": CREATED}]
+    k.top["eras"] = [{"id": "era-1", "label": "Season 1", "looks": ["look-a"], "identity_ref": None,
+                      "started": "2026-10-02", "ended": None, "linked_from": None}]
+    k.put_json("person.json", FICTIONAL, "org.prsn.person")
+    approved = {"by": "user", "at": CREATED}
+    anchor = {"tier": "authored", "how": "example-model-sheet", "at": CREATED, "set_by": "user",
+              "anchor": True, "lineage": 0}
+    sheet = PNG_BYTES + b"sheet"
+    sheet_sha = P.sha256_hex(sheet)
+    k.put("face/samples/f-0001.png", sheet, "org.prsn.face.sample", "image/png", origin=anchor,
+          pose={"yaw": 0.0, "pitch": 0.0, "roll": 0.0}, condition="frontal", expression="neutral",
+          look="look-a", era="era-1")
+    gen_model = {"role": "generator", "key": "example-image-editor", "sha256": "d" * 64, "license": "Apache-2.0"}
+    for i, (yaw, cond, expr) in enumerate([(-35.0, "three-quarter", "smile-open"), (80.0, "profile", "neutral")], 2):
+        data = PNG_BYTES + bytes([i])
+        k.put(f"face/samples/f-000{i}.png", data, "org.prsn.face.sample", "image/png",
+              origin={"tier": "authored", "how": "example-guided-generation", "at": CREATED, "set_by": "user",
+                      "synthetic": True, "approved": approved, "lineage": 1,
+                      "admit": {"metric": "arcface-cos", "value": 0.71, "threshold": 0.62}},
+              pose={"yaw": yaw, "pitch": 0.0, "roll": 0.0}, condition=cond, expression=expr,
+              look="look-a", era="era-1",
+              derivation=entry_derivation("org.example.method.view-generation", "org.example.recipe.view-gen",
+                                          [{"sha256": sheet_sha, "role": "anchor"}], [gen_model],
+                                          {"yaw": yaw, "seed": i}))
+    body = PNG_BYTES + b"body"
+    k.put("body/samples/b-0001.png", body, "org.prsn.body.sample", "image/png", framing="full-body",
+          origin=dict(anchor), look="look-a", era="era-1")
+    s2, s3 = (P.sha256_hex(PNG_BYTES + bytes([i])) for i in (2, 3))
+    samples = [{"sha256": h, "role": "samples"} for h in (sheet_sha, s2, s3)]
+    k.put_json("face/holdout.json", {"seed": 7, "items": [s3], "method": "stratified", "strata": "angle_bin"},
+               "org.prsn.face.holdout",
+               derivation=entry_derivation("org.dtwin.method.holdout", "org.example.recipe.holdout", samples,
+                                           params={"seed": 7, "fraction": 0.3}))
+    vlm = {"role": "captioner", "key": "example-vlm", "sha256": "f" * 64, "license": "Apache-2.0"}
+    captions = {"convention": "natural", "state": "look-a", "trigger": "mira_ex", "excludes": ["identity"],
+                "items": [{"sha256": sheet_sha, "text": "mira_ex, front view, neutral, red jacket, plain background"},
+                          {"sha256": s2, "text": "mira_ex, three-quarter view, open smile, red jacket"}]}
+    k.put_json("face/captions-natural-look-a.json", captions, "org.prsn.face.captions",
+               derivation=entry_derivation("org.dtwin.method.captions", "org.example.recipe.captions",
+                                           samples, [vlm], {"convention": "natural"}))
+    k.put_json("face/refset-gemini-nano-banana-2.1-look-a.json",
+               {"target": {"key": "gemini-nano-banana-2.1", "slots": {"character": 4}}, "state": "look-a",
+                "items": [{"sha256": sheet_sha, "slot": "character", "rank": 1},
+                          {"sha256": s2, "slot": "character", "rank": 2}]},
+               "org.prsn.face.refset",
+               derivation=entry_derivation("org.dtwin.method.refset", "org.example.recipe.refset", samples,
+                                           params={"target": "gemini-nano-banana-2.1"}))
+    k.put_json("face/descriptor.json",
+               {"state": "*", "text": "Mira: a young adult cartoon courier with teal hair and round amber eyes.",
+                "invariants": ["teal hair", "round amber eyes", "small scar over left eyebrow"],
+                "avoid": ["realistic skin texture", "blue eyes"], "palette": ["#2ec4b6", "#d1495b", "#ffb703"]},
+               "org.prsn.face.descriptor", origin={"tier": "authored", "at": CREATED, "set_by": "user"})
+    caps_sha = P.sha256_hex(P.canonical(captions))
+    lora_inputs = [{"sha256": h, "role": "samples"} for h in (sheet_sha, s2)] + [{"sha256": caps_sha, "role": "captions"}]
+    k.put("face/generation/lora.safetensors", b"safetensors-stub", "org.prsn.image.lora", "application/octet-stream",
+          base_model={"key": "example-base", "sha256": "b" * 64}, trigger="mira_ex", rank=16,
+          training_samples=[sheet_sha, s2], training_captions=caps_sha, synthetic_capable=True,
+          frame="head-canonical", look="look-a", era="era-1",
+          derivation=entry_derivation("org.example.method.lora-train", "org.example.recipe.lora", lora_inputs,
+                                      [{"role": "base", "key": "example-base", "sha256": "b" * 64,
+                                        "license": "Apache-2.0"}], {"steps": 2000, "seed": 1},
+                                      eval={"split": "holdout", "metric": "arcface-cos", "value": 0.74}))
+    k.put_json("face/generation/vendor-ref.json", {"note": "identifier only; the samples are the portable source"},
+               "org.prsn.image.vendor-ref", vendor="example-vendor", kind="character_id", value="chr_0001",
+               vendor_model="example-model-2", portable=False, created_from=[sheet_sha, s2], synthetic_capable=True,
+               frame="head-canonical", look="look-a", era="era-1",
+               derivation=entry_derivation("org.example.method.vendor-upload", "org.example.recipe.vendor",
+                                           [{"sha256": h, "role": "samples"} for h in (sheet_sha, s2)]))
+    return k
+
+
 def _manifest(root: Path) -> dict:
     return P.parse((root / "manifest.json").read_bytes())
 
@@ -198,6 +294,7 @@ def build_prsn() -> None:
     face_package(ex / "valid-v11").seal()
     face_package(ex / "valid-v10-legacy", spec=None, legacy=True).seal()
     voice_package(ex / "voice-v11").seal()
+    fictional_package(ex / "fictional-v12").seal()
 
     out = ROOT / "conformance" / "prsn"
     for d in out.iterdir() if out.exists() else []:
@@ -348,13 +445,66 @@ def build_prsn() -> None:
          "an unknown non-critical type is skipped on read and copied through byte for byte on rewrite",
          pre=unknown_noncritical)
 
-    doc = {"version": 1, "spec": "spec/prsn.md (draft v1.1)",
+    # -- spec 1.2 (core.md): authored material, index records, vendor references
+    def as_real(k):
+        k.put_json("person.json", {**FICTIONAL, "kind": "real"}, "org.prsn.person")
+    case("authored-on-real-person", "authored", "invalid",
+         "tier `authored` in a file whose person is real; a real person's evidence is captured, never authored",
+         pre=as_real, build=fictional_package)
+    case("authored-synthetic-unapproved", "authored", "invalid",
+         "an authored synthetic sample without `origin.approved`",
+         pre=lambda k: e(k, "face/samples/f-0002.png")["origin"].pop("approved"), build=fictional_package)
+
+    def no_anchor(k):
+        for path in ("face/samples/f-0001.png", "body/samples/b-0001.png"):
+            e(k, path)["origin"].pop("anchor")
+    case("authored-without-anchor", "authored", "invalid",
+         "authored synthetic samples but no anchor to hold them to", pre=no_anchor, build=fictional_package)
+
+    def hold_anchor(k):
+        sheet = P.sha256_hex(PNG_BYTES + b"sheet")
+        p = k.root / "face/holdout.json"
+        doc = P.parse(p.read_bytes())
+        doc["items"].append(sheet)
+        p.write_bytes(P.canonical(doc))
+    case("holdout-contains-anchor", "index", "invalid", "a held-out split that holds out an anchor",
+         pre=hold_anchor, build=fictional_package)
+
+    def refset_dangling(k):
+        p = k.root / "face/refset-gemini-nano-banana-2.1-look-a.json"
+        doc = P.parse(p.read_bytes())
+        doc["items"][0]["sha256"] = "0" * 64
+        p.write_bytes(P.canonical(doc))
+    case("refset-item-unresolved", "index", "invalid", "a reference set naming a sample this file does not hold",
+         pre=refset_dangling, build=fictional_package)
+    case("vendor-ref-portable", "type-fields", "invalid", "a vendor reference that claims to be portable",
+         pre=lambda k: e(k, "face/generation/vendor-ref.json").update(portable=True), build=fictional_package)
+    case("authored-in-spec11-file", "spec-fields", "invalid", "authored material in a file that declares spec 1.1",
+         pre=lambda k: k.top.update(spec="1.1"), build=fictional_package)
+    case("authored-synthetic-without-admit", "authored", "invalid",
+         "a non-anchor authored synthetic sample without `origin.admit`",
+         pre=lambda k: e(k, "face/samples/f-0002.png")["origin"].pop("admit"), build=fictional_package)
+
+    def unconsented(k):
+        k.put_json("person.json", {**FICTIONAL, "consent": {"vendors": []}}, "org.prsn.person")
+    case("vendor-not-consented", "consent", "invalid",
+         "a vendor reference to a vendor that person.json consent.vendors does not list",
+         pre=unconsented, build=fictional_package)
+
+    def train_on_holdout(k):
+        s3 = P.sha256_hex(PNG_BYTES + bytes([3]))
+        e(k, "face/generation/lora.safetensors")["training_samples"].append(s3)
+    case("holdout-used-for-training", "index", "invalid", "a LoRA whose training samples include a held-out sample",
+         pre=train_on_holdout, build=fictional_package)
+
+    doc = {"version": 1, "spec": "spec/prsn.md (draft v1.2)",
            "outcomes": {"refuse": "a reader MUST refuse to load the file",
                         "invalid": "a validator MUST report `rule`; the file breaks exactly that rule",
                         "valid": "the file is valid; `why` says what a reader must do with it"},
            "valid": [{"id": "valid-v11", "path": "examples/prsn/valid-v11", "spec": "1.1"},
                      {"id": "valid-v10-legacy", "path": "examples/prsn/valid-v10-legacy", "spec": None},
-                     {"id": "voice-v11", "path": "examples/prsn/voice-v11", "spec": "1.1"}],
+                     {"id": "voice-v11", "path": "examples/prsn/voice-v11", "spec": "1.1"},
+                     {"id": "fictional-v12", "path": "examples/prsn/fictional-v12", "spec": "1.2"}],
            "cases": cases}
     (out / "rules.json").write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8")
 

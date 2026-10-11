@@ -1,0 +1,376 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/scen/schemas/scen-entry.schema.json",
+  "title": ".scen manifest entry",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/entry.schema.json"
+    },
+    {
+      "$ref": "#/$defs/subjectRule"
+    },
+    {
+      "$ref": "#/$defs/stateRule"
+    },
+    {
+      "$ref": "#/$defs/propRule"
+    },
+    {
+      "$ref": "#/$defs/frameRule"
+    },
+    {
+      "$ref": "#/$defs/typeRules"
+    }
+  ],
+  "$defs": {
+    "subjectRule": {
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[^/]+$"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "properties": {
+          "path": {
+            "const": "scene.json"
+          },
+          "type": {
+            "const": "org.scen.scene"
+          }
+        }
+      }
+    },
+    "stateRule": {
+      "description": "Role entries carry `state` (a declared id or `*`).",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/(samples|geometry|attributes|templates|training|generation)/"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "required": [
+          "state"
+        ],
+        "properties": {
+          "state": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "propRule": {
+      "description": "prop/ role entries name their prop.",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^prop/[a-z]+/"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "required": [
+          "prop"
+        ]
+      }
+    },
+    "frameRule": {
+      "description": "place and prop are spatial: geometry/ and generation/ entries carry frame.",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^(place|prop)/(geometry|generation)/"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "required": [
+          "frame"
+        ]
+      }
+    },
+    "typeRules": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.place.sample"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.prop.sample"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin",
+              "prop"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.place.splat"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "sh_degree",
+              "kernel",
+              "color_space",
+              "zones"
+            ],
+            "properties": {
+              "critical": {
+                "const": false
+              },
+              "zones": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.place.mesh"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "zones"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.prop.mesh"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "prop"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.prop.splat"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "prop",
+              "sh_degree",
+              "kernel",
+              "color_space"
+            ],
+            "properties": {
+              "critical": {
+                "const": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.place.lighting"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin",
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "not": {
+                  "const": "*"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.place.palette"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin",
+              "color_space"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.place.bible"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.place.template"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "model"
+            ],
+            "properties": {
+              "model": {
+                "type": "object",
+                "required": [
+                  "key",
+                  "sha256",
+                  "dim",
+                  "license"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.place.render"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin",
+              "derivation",
+              "camera"
+            ],
+            "properties": {
+              "origin": {
+                "required": [
+                  "render"
+                ],
+                "properties": {
+                  "render": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.scen.image.lora"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "base_model",
+              "trigger"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

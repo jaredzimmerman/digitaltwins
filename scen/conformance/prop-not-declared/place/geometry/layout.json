@@ -1,0 +1,1 @@
+{"anchor":{"id":"floor-corner-ne","position":[0,0,0]},"fixtures":[{"T_scene_from_prop":[[1,0,0,3.5],[0,1,0,0.9],[0,0,1,0.3],[0,0,0,1]],"id":"sink"}],"signage":[{"id":"calendar","text":"OCTOBER"}],"units":"m","zones":[{"id":"galley","polygon":[[0,0],[3.2,0],[3.2,1.4],[0,1.4]]},{"id":"window","polygon":[[3.2,0],[4,0],[4,1.4],[3.2,1.4]]}]}

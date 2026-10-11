@@ -1,16 +1,17 @@
 # prsn
 
 `.prsn` is a portable, application-independent file that describes one person's face,
-head and voice assets, together with references to the raw capture they were derived
-from, so the assets can be re-derived with better methods later without rescanning the
-person. `.prsncap` is its companion file: the raw capture session itself (video, depth,
+head, body and voice assets (a real person, or from revision 1.2 a fictional character),
+together with references to the raw capture they were derived from, so the assets can be
+re-derived with better methods later without rescanning the person. `.prsncap` is its companion file: the raw capture session itself (video, depth,
 stills, calibration, tracking, IMU, audio), written once and never changed.
 
 This repository holds the format specification, JSON Schemas for every JSON record the
 format defines, example files, conformance test cases, and a small validator. It contains
 no application code.
 
-Status: **Draft v1.1**. Files declare `"version": 1` and `"spec": "1.1"`.
+Status: **Draft v1.2**. Files declare `"version": 1` and `"spec": "1.2"` (or `"1.1"`). The rules
+shared with `.styl` and `.scen` are summarised in [digitaltwins core](../core/spec/core.md).
 
 ## What is in a `.prsn`
 
@@ -68,7 +69,8 @@ capture script and `imu.json`. See [schemas/README.md](schemas/README.md).
 
 ## Examples and conformance
 
-- [`examples/`](examples/): valid `.prsn` packages (spec 1.1 face and voice files, a 1.0
+- [`examples/`](examples/): valid `.prsn` packages (spec 1.1 face and voice files, a spec
+  1.2 fictional character with authored anchors, index records and a vendor reference, a 1.0
   legacy file), a minimal `.prsncap`, and a toy recipe registry.
 - [`conformance/`](conformance/): one invalid file per rule, ZIP container cases, and
   capture cases, and vectors for canonical JSON, SHA-256, `action_key`, Ed25519,

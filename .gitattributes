@@ -1,0 +1,14 @@
+# Signatures and media stubs are bytes; never let git treat them as text
+*.sig binary
+*.png binary
+*.heic binary
+*.glb binary
+*.npz binary
+*.safetensors binary
+*.bin binary
+*.bir binary
+*.flac binary
+*.exr binary
+*.f16 binary
+*.f32 binary
+*.prsn binary

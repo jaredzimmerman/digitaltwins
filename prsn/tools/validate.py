@@ -28,6 +28,9 @@ from referencing import Registry, Resource
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import prsnfmt as P  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "core" / "tools"))
+import dtwin_checks as X  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 BASE = "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/"
 MIMETYPES = {"application/vnd.prsn+zip": "current", "application/vnd.museli.prsn+zip": "legacy"}
@@ -50,17 +53,25 @@ KNOWN_TYPES = {
     "org.prsn.voice.training", "org.prsn.voice.training-set", "org.prsn.voice.seed",
     "org.prsn.voice.prompt", "org.prsn.voice.generation", "org.prsn.voice.lora", "org.prsn.voice.rvc",
     "org.prsn.voice.piper",
+    # spec 1.2 (core.md)
+    "org.prsn.body.sample", "org.prsn.image.vendor-ref", "org.prsn.image.adapter-ref",
+    *(f"org.prsn.{m}.{k}" for m in ("face", "body") for k in ("captions", "refset", "descriptor", "holdout")),
 }
+INDEX_KINDS = {"captions": "captions.schema.json", "refset": "refset.schema.json",
+               "descriptor": "descriptor.schema.json", "holdout": "holdout.schema.json"}
+CORE_BASE = "https://github.com/jaredzimmerman/digitaltwins/core/schemas/"
 
 # --------------------------------------------------------------------------- #
 # schemas
 # --------------------------------------------------------------------------- #
 
 _resources = []
-for f in sorted((ROOT / "schemas").glob("*.schema.json")):
+for base, folder in ((BASE, ROOT / "schemas"),
+                     ("https://github.com/jaredzimmerman/digitaltwins/core/schemas/", ROOT.parent / "core" / "schemas")):
+  for f in sorted(folder.glob("*.schema.json")):
     doc = json.loads(f.read_text(encoding="utf-8"))
-    if doc.get("$id") != BASE + f.name:
-        raise SystemExit(f"{f.name}: $id must be {BASE + f.name}")
+    if doc.get("$id") != base + f.name:
+        raise SystemExit(f"{f.name}: $id must be {base + f.name}")
     Draft202012Validator.check_schema(doc)
     _resources.append((doc["$id"], Resource.from_contents(doc)))
 REGISTRY = Registry().with_resources(_resources)
@@ -68,7 +79,7 @@ REGISTRY = Registry().with_resources(_resources)
 
 def schema_errors(ref: str, instance) -> list[str]:
     """Errors of `instance` against `ref` (`name.schema.json` or `name.schema.json#/$defs/x`)."""
-    v = Draft202012Validator({"$ref": BASE + ref}, registry=REGISTRY)
+    v = Draft202012Validator({"$ref": ref if ref.startswith("https://") else BASE + ref}, registry=REGISTRY)
     out = []
     for e in sorted(v.iter_errors(instance), key=lambda e: list(e.absolute_path)):
         where = "/".join(str(p) for p in e.absolute_path) or "(root)"
@@ -91,6 +102,15 @@ class Report:
     @property
     def rules(self) -> set[str]:
         return {r for r, _ in self.errors}
+
+
+def _spec_ge(spec, want: tuple[int, int]) -> bool:
+    if not isinstance(spec, str) or "." not in spec:
+        return False
+    try:
+        return tuple(int(x) for x in spec.split(".", 1)) >= want
+    except ValueError:
+        return False
 
 
 def _spec_ge_11(spec) -> bool:
@@ -211,6 +231,12 @@ def check_prsn(files: dict[str, bytes]) -> Report:
             r.err("generation", f"{p}: generated material in samples/ or training/ ({x})")
         for x in schema_errors("prsn-entry.schema.json#/$defs/typeRules", e):
             r.err("type-fields", f"{p}: MUST field missing or wrong ({x})")
+        for rule, defs in (("authored", ("authoredSynthetic", "anchorRule", "renderRule")),
+                           ("index", ("indexRecord",)),
+                           ("type-fields", ("attributesRule", "vendorRef", "adapterRef"))):
+            for d in defs:
+                for x in schema_errors(CORE_BASE + "rules.schema.json#/$defs/" + d, e):
+                    r.err(rule, f"{p}: {d} ({x})")
 
     # critical / unknown types
     for e in entries:
@@ -246,6 +272,7 @@ def check_prsn(files: dict[str, bytes]) -> Report:
     check_signature(m, files, r)
 
     # person.json
+    subject: dict = {}
     person_path = m.get("person", "person.json")
     if person_path not in listed or person_path not in files:
         r.err("person", f"{person_path} is not a listed entry")
@@ -265,6 +292,17 @@ def check_prsn(files: dict[str, bytes]) -> Report:
                 person = mapped
             for x in schema_errors("person.schema.json", person):
                 r.err("person", x)
+            subject = person
+
+    X.check_authored(entries, subject.get("kind", "real") == "fictional", False, r.err)
+    X.check_index(entries, files, P.parse, schema_errors, CORE_BASE, False, r.err)
+    X.check_references(entries, subject, r.err)
+    if not _spec_ge(m.get("spec"), (1, 2)):
+        for e in entries:
+            t = str(e.get("type", ""))
+            if (e.get("origin") or {}).get("tier") == "authored" or t.rsplit(".", 1)[-1] in INDEX_KINDS \
+                    or t in ("org.prsn.body.sample", "org.prsn.image.vendor-ref", "org.prsn.image.adapter-ref"):
+                r.err("spec-fields", f"{e.get('path')}: needs spec >= 1.2")
 
     # capture refs
     refs = []
@@ -403,8 +441,8 @@ def check_prsncap(root: Path) -> Report:
 # eviction reference (spec/voice.md, Eviction)
 # --------------------------------------------------------------------------- #
 
-RANK = {"professional": 4, "enrolled": 3, "imported": 2, "observed": 1}
-TOP = {"professional", "enrolled"}
+RANK = {"professional": 4, "enrolled": 3, "authored": 3, "imported": 2, "observed": 1}
+TOP = {"professional", "enrolled", "authored"}
 
 
 def evict(bank: list[dict], budget: dict, pinned=(), redundancy=None, newcomer=None, today=TODAY,

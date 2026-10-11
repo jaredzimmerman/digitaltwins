@@ -1,0 +1,95 @@
+{
+ "version": 1,
+ "spec": "spec/scen.md (draft 1.0)",
+ "outcomes": {
+  "refuse": "a reader MUST refuse to load the file",
+  "invalid": "a validator MUST report `rule`; the file breaks exactly that rule",
+  "valid": "the file is valid; `why` says what a reader must do with it"
+ },
+ "valid": [
+  {
+   "id": "north-pier-kitchen",
+   "path": "examples/north-pier-kitchen",
+   "spec": "1.0"
+  },
+  {
+   "id": "fictional-harbor-set",
+   "path": "examples/fictional-harbor-set",
+   "spec": "1.0"
+  }
+ ],
+ "cases": [
+  {
+   "id": "people-present",
+   "rule": "people",
+   "outcome": "invalid",
+   "why": "a place sample with identifiable people left in (`people: present`)"
+  },
+  {
+   "id": "prop-not-declared",
+   "rule": "props",
+   "outcome": "invalid",
+   "why": "a prop entry naming a prop not in manifest.props"
+  },
+  {
+   "id": "exact-location-without-consent",
+   "rule": "location",
+   "outcome": "invalid",
+   "why": "coordinates in scene.json without `precision: exact` and consent"
+  },
+  {
+   "id": "authored-on-real-place",
+   "rule": "authored",
+   "outcome": "invalid",
+   "why": "authored material in a real place's file"
+  },
+  {
+   "id": "render-in-samples",
+   "rule": "authored",
+   "outcome": "invalid",
+   "why": "a render of geometry placed in samples/"
+  },
+  {
+   "id": "lighting-for-every-state",
+   "rule": "type-fields",
+   "outcome": "invalid",
+   "why": "a lighting record with `state: \"*\"`"
+  },
+  {
+   "id": "geometry-missing-frame",
+   "rule": "spec-fields",
+   "outcome": "invalid",
+   "why": "place geometry without `frame`"
+  },
+  {
+   "id": "state-not-declared",
+   "rule": "states",
+   "outcome": "invalid",
+   "why": "a sample whose `state` is not in manifest.states"
+  },
+  {
+   "id": "exact-precision-without-consent",
+   "rule": "location",
+   "outcome": "invalid",
+   "why": "`precision: exact` in scene.json without consent.exact_location"
+  },
+  {
+   "id": "zone-not-in-layout",
+   "rule": "type-fields",
+   "outcome": "invalid",
+   "why": "a sample naming a zone the layout does not define"
+  },
+  {
+   "id": "masked-without-derivation",
+   "rule": "people",
+   "outcome": "invalid",
+   "why": "`people: masked` with no derivation naming the method"
+  },
+  {
+   "id": "fictional-without-anchor",
+   "rule": "authored",
+   "outcome": "invalid",
+   "why": "a fictional place with an authored synthetic view and no anchor"
+  }
+ ]
+}

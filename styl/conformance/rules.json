@@ -1,0 +1,96 @@
+{
+ "version": 1,
+ "spec": "spec/styl.md (draft 1.0)",
+ "outcomes": {
+  "refuse": "a reader MUST refuse to load the file",
+  "invalid": "a validator MUST report `rule`; the file breaks exactly that rule",
+  "valid": "the file is valid; `why` says what a reader must do with it"
+ },
+ "valid": [
+  {
+   "id": "harbor-ink",
+   "path": "examples/harbor-ink",
+   "spec": "1.0"
+  }
+ ],
+ "cases": [
+  {
+   "id": "version-too-new",
+   "rule": "version",
+   "outcome": "refuse",
+   "why": "manifest.version is 2"
+  },
+  {
+   "id": "critical-unknown-type",
+   "rule": "critical",
+   "outcome": "refuse",
+   "why": "a critical entry of an unknown type"
+  },
+  {
+   "id": "exemplar-missing-content-class",
+   "rule": "type-fields",
+   "outcome": "invalid",
+   "why": "an exemplar without `content_class`"
+  },
+  {
+   "id": "exemplar-missing-rights",
+   "rule": "type-fields",
+   "outcome": "invalid",
+   "why": "an exemplar without `rights`"
+  },
+  {
+   "id": "variant-not-declared",
+   "rule": "states",
+   "outcome": "invalid",
+   "why": "an entry whose `variant` is not in manifest.variants"
+  },
+  {
+   "id": "frame-on-style-entry",
+   "rule": "spec-fields",
+   "outcome": "invalid",
+   "why": "a `.styl` entry with a `frame` (no spatial modality)"
+  },
+  {
+   "id": "template-without-derivation",
+   "rule": "spec-fields",
+   "outcome": "invalid",
+   "why": "a template without `derivation`"
+  },
+  {
+   "id": "synthetic-imported-exemplar",
+   "rule": "generation",
+   "outcome": "invalid",
+   "why": "a generated exemplar whose tier is `imported`, not `authored`"
+  },
+  {
+   "id": "captions-describe-unknown-sample",
+   "rule": "index",
+   "outcome": "invalid",
+   "why": "a caption naming a hash the file does not hold"
+  },
+  {
+   "id": "vendor-ref-without-samples",
+   "rule": "type-fields",
+   "outcome": "invalid",
+   "why": "a vendor reference whose `created_from` names no sample of the file"
+  },
+  {
+   "id": "lineage-mismatch",
+   "rule": "authored",
+   "outcome": "invalid",
+   "why": "an exemplar generated from lineage-0 anchors that claims lineage 2"
+  },
+  {
+   "id": "render-outside-scen",
+   "rule": "authored",
+   "outcome": "invalid",
+   "why": "`origin.render` in a .styl (renders are .scen only)"
+  },
+  {
+   "id": "unsigned",
+   "rule": null,
+   "outcome": "valid",
+   "why": "no signature block: valid, top tiers including `authored` are not vouched for"
+  }
+ ]
+}

@@ -22,6 +22,9 @@
     },
     {
       "$ref": "#/$defs/typeRules"
+    },
+    {
+      "$ref": "#/$defs/coreRules"
     }
   ],
   "$defs": {
@@ -112,7 +115,7 @@
       "additionalProperties": true
     },
     "depthRule": {
-      "description": "Entry depth: `person.json` (and only it) at depth 1; at depth 2 only modality-level index records `<modality>/<name>.json` (capture references, coverage records); every other entry `<modality>/<role>/<name>` or deeper.",
+      "description": "Entry depth: `person.json` (and only it) at depth 1; at depth 2 only modality-level index records `<modality>/<name>.json` (capture references, coverage records, and from spec 1.2 captions, reference sets, descriptors and held-out splits); every other entry `<modality>/<role>/<name>` or deeper.",
       "allOf": [
         {
           "if": {
@@ -150,7 +153,7 @@
                 "pattern": "\\.json$"
               },
               "type": {
-                "pattern": "^(org\\.prsn|org\\.museli)\\.[a-z0-9-]+\\.(capture-ref|coverage)$"
+                "pattern": "^(org\\.prsn|org\\.museli)\\.[a-z0-9-]+\\.(capture-ref|coverage|captions|refset|descriptor|holdout)$"
               }
             }
           }
@@ -176,7 +179,7 @@
       }
     },
     "notGeneratedRule": {
-      "description": "Generated output never goes into samples/ or training/: such an entry's origin is never marked `synthetic`.",
+      "description": "Generated output never goes into samples/ or training/: such an entry's origin is never marked `synthetic`, except authored material of a fictional person (spec 1.2, core.md §4.2), whose further requirements are in core rules.schema.json#/$defs/authoredSynthetic.",
       "if": {
         "properties": {
           "path": {
@@ -190,7 +193,7 @@
       "then": {
         "properties": {
           "origin": {
-            "not": {
+            "if": {
               "required": [
                 "synthetic"
               ],
@@ -199,6 +202,30 @@
                   "const": true
                 }
               }
+            },
+            "then": {
+              "anyOf": [
+                {
+                  "required": [
+                    "tier"
+                  ],
+                  "properties": {
+                    "tier": {
+                      "const": "authored"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "was"
+                  ],
+                  "properties": {
+                    "was": {
+                      "const": "authored"
+                    }
+                  }
+                }
+              ]
             }
           }
         }
@@ -711,6 +738,33 @@
               "source_format"
             ]
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.body.sample"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin",
+              "framing"
+            ],
+            "properties": {
+              "framing": {
+                "enum": [
+                  "full-body",
+                  "three-quarter-body",
+                  "waist-up"
+                ]
+              }
+            }
+          }
         }
       ]
     },
@@ -769,6 +823,32 @@
               "frame"
             ]
           }
+        }
+      ]
+    },
+    "coreRules": {
+      "description": "Rules shared with .styl and .scen (core.md §4 to §6).",
+      "allOf": [
+        {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/rules.schema.json#/$defs/authoredSynthetic"
+        },
+        {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/rules.schema.json#/$defs/anchorRule"
+        },
+        {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/rules.schema.json#/$defs/renderRule"
+        },
+        {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/rules.schema.json#/$defs/attributesRule"
+        },
+        {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/rules.schema.json#/$defs/indexRecord"
+        },
+        {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/rules.schema.json#/$defs/vendorRef"
+        },
+        {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/rules.schema.json#/$defs/adapterRef"
         }
       ]
     }

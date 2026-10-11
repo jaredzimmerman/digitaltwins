@@ -1,6 +1,6 @@
 {
  "version": 1,
- "spec": "spec/prsn.md (draft v1.1)",
+ "spec": "spec/prsn.md (draft v1.2)",
  "outcomes": {
   "refuse": "a reader MUST refuse to load the file",
   "invalid": "a validator MUST report `rule`; the file breaks exactly that rule",
@@ -21,6 +21,11 @@
    "id": "voice-v11",
    "path": "examples/prsn/voice-v11",
    "spec": "1.1"
+  },
+  {
+   "id": "fictional-v12",
+   "path": "examples/prsn/fictional-v12",
+   "spec": "1.2"
   }
  ],
  "cases": [
@@ -203,6 +208,66 @@
    "rule": null,
    "outcome": "valid",
    "why": "an unknown non-critical type is skipped on read and copied through byte for byte on rewrite"
+  },
+  {
+   "id": "authored-on-real-person",
+   "rule": "authored",
+   "outcome": "invalid",
+   "why": "tier `authored` in a file whose person is real; a real person's evidence is captured, never authored"
+  },
+  {
+   "id": "authored-synthetic-unapproved",
+   "rule": "authored",
+   "outcome": "invalid",
+   "why": "an authored synthetic sample without `origin.approved`"
+  },
+  {
+   "id": "authored-without-anchor",
+   "rule": "authored",
+   "outcome": "invalid",
+   "why": "authored synthetic samples but no anchor to hold them to"
+  },
+  {
+   "id": "holdout-contains-anchor",
+   "rule": "index",
+   "outcome": "invalid",
+   "why": "a held-out split that holds out an anchor"
+  },
+  {
+   "id": "refset-item-unresolved",
+   "rule": "index",
+   "outcome": "invalid",
+   "why": "a reference set naming a sample this file does not hold"
+  },
+  {
+   "id": "vendor-ref-portable",
+   "rule": "type-fields",
+   "outcome": "invalid",
+   "why": "a vendor reference that claims to be portable"
+  },
+  {
+   "id": "authored-in-spec11-file",
+   "rule": "spec-fields",
+   "outcome": "invalid",
+   "why": "authored material in a file that declares spec 1.1"
+  },
+  {
+   "id": "authored-synthetic-without-admit",
+   "rule": "authored",
+   "outcome": "invalid",
+   "why": "a non-anchor authored synthetic sample without `origin.admit`"
+  },
+  {
+   "id": "vendor-not-consented",
+   "rule": "consent",
+   "outcome": "invalid",
+   "why": "a vendor reference to a vendor that person.json consent.vendors does not list"
+  },
+  {
+   "id": "holdout-used-for-training",
+   "rule": "index",
+   "outcome": "invalid",
+   "why": "a LoRA whose training samples include a held-out sample"
   }
  ]
 }

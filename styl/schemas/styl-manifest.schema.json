@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/styl/schemas/styl-manifest.schema.json",
+  "title": ".styl manifest.json",
+  "type": "object",
+  "required": [
+    "format",
+    "version",
+    "created",
+    "style",
+    "entries"
+  ],
+  "properties": {
+    "format": {
+      "const": "styl"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "spec": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+    },
+    "created": {
+      "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/dateTime"
+    },
+    "generator": {
+      "type": "string"
+    },
+    "style": {
+      "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/entryPath"
+    },
+    "budgets": {
+      "type": "object"
+    },
+    "variants": {
+      "type": "array",
+      "items": {
+        "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/state.schema.json"
+      }
+    },
+    "refs": {
+      "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/refs.schema.json"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "styl-entry.schema.json"
+      }
+    },
+    "signature": {
+      "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/signature"
+    },
+    "redact": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

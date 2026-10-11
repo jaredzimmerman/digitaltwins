@@ -37,6 +37,16 @@ Rule ids are defined in [spec/prsn.md, Conformance](../../spec/prsn.md#conforman
 | `signature-manifest-altered` | `signature` | invalid | `created` changed after signing |
 | `signature-key-id-mismatch` | `signature` | invalid | wrong `key_id`, re-signed so the signature itself verifies |
 | `signature-file-missing` | `signature` | invalid | `signatures/manifest.sig` deleted |
+| `authored-on-real-person` | `authored` | invalid | (from `fictional-v12`) `person.json` says `kind: "real"` while samples are `authored` |
+| `authored-synthetic-unapproved` | `authored` | invalid | (from `fictional-v12`) an authored synthetic sample without `origin.approved` |
+| `authored-without-anchor` | `authored` | invalid | (from `fictional-v12`) authored synthetic samples, no `origin.anchor: true` anywhere |
+| `holdout-contains-anchor` | `index` | invalid | (from `fictional-v12`) `face/holdout.json` lists the anchor sheet |
+| `refset-item-unresolved` | `index` | invalid | (from `fictional-v12`) a reference-set item names a hash the file does not hold |
+| `vendor-ref-portable` | `type-fields` | invalid | (from `fictional-v12`) `org.prsn.image.vendor-ref` with `portable: true` |
+| `authored-in-spec11-file` | `spec-fields` | invalid | (from `fictional-v12`) authored material in a file that declares `spec: "1.1"` |
+| `authored-synthetic-without-admit` | `authored` | invalid | (from `fictional-v12`) a non-anchor authored synthetic sample without `origin.admit` |
+| `vendor-not-consented` | `consent` | invalid | (from `fictional-v12`) `person.json` `consent.vendors` is empty while a vendor reference exists |
+| `holdout-used-for-training` | `index` | invalid | (from `fictional-v12`) the LoRA's `training_samples` include the held-out sample |
 | `unsigned` | | valid | no signature block: read as unsigned, top tiers not vouched for |
 | `unlisted-file` | | valid | an extra file not in the manifest: ignored, never written back |
 | `expired-entry` | | valid | sample `expires: 2001-01-01`: dropped on load, not written again |

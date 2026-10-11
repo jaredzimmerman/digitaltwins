@@ -45,9 +45,11 @@
       "enum": [
         "professional",
         "enrolled",
+        "authored",
         "imported",
         "observed"
-      ]
+      ],
+      "description": "Provenance tier (prsn.md, Provenance tiers). `authored` (spec >= 1.2, core.md §4.1) is valid only in a file whose person.json says `kind: fictional`; the validator checks that."
     },
     "lookRef": {
       "description": "A look id from manifest.looks, or `*` for identity-level entries.",
@@ -62,7 +64,11 @@
         "ears",
         "neck",
         "shoulders",
-        "upper-torso"
+        "upper-torso",
+        "arms",
+        "torso",
+        "lower-body",
+        "full-body"
       ]
     },
     "license": {
@@ -99,6 +105,54 @@
           "type": "string"
         },
         "synthetic": {
+          "type": "boolean"
+        },
+        "approved": {
+          "type": "object",
+          "required": [
+            "by",
+            "at"
+          ],
+          "properties": {
+            "by": {
+              "type": "string"
+            },
+            "at": {
+              "$ref": "#/$defs/dateTime"
+            }
+          },
+          "additionalProperties": true
+        },
+        "lineage": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "anchor": {
+          "type": "boolean"
+        },
+        "admit": {
+          "type": "object",
+          "required": [
+            "metric",
+            "value"
+          ],
+          "properties": {
+            "metric": {
+              "type": "string"
+            },
+            "value": {
+              "type": "number"
+            },
+            "threshold": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": true
+        },
+        "confirmed_by": {
+          "type": "string"
+        },
+        "render": {
           "type": "boolean"
         }
       },

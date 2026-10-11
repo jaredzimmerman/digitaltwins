@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/descriptor.schema.json",
+  "title": "Descriptor index record (core.md §5.3)",
+  "description": "Text for targets without reference images, and the invariant part of every prompt. Never holds biometric measurements.",
+  "type": "object",
+  "required": [
+    "text"
+  ],
+  "properties": {
+    "state": {
+      "type": "string",
+      "minLength": 1
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "invariants": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "avoid": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "fields": {
+      "type": "object"
+    },
+    "palette": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^#[0-9a-fA-F]{6}$"
+      }
+    }
+  },
+  "additionalProperties": true
+}

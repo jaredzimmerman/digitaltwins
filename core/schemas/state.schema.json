@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/state.schema.json",
+  "title": "manifest.variants[] (.styl) and manifest.states[] (.scen) item",
+  "description": "A named state that a group of samples shares. `*` is reserved for identity-level entries.",
+  "type": "object",
+  "required": [
+    "id"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "const": "*"
+      }
+    },
+    "label": {
+      "type": "string"
+    },
+    "default": {
+      "type": "boolean"
+    },
+    "state": {
+      "type": "object"
+    },
+    "created": {
+      "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/dateTime"
+    }
+  },
+  "additionalProperties": true
+}

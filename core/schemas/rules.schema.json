@@ -1,0 +1,398 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/rules.schema.json",
+  "title": "Entry rules shared by every format (core.md §3 to §6)",
+  "description": "Each $def is one rule, applied by the format entry schemas and by the validators.",
+  "$defs": {
+    "authoredSynthetic": {
+      "description": "core.md §4.2: an authored entry in samples/ or training/ with `origin.synthetic: true` needs `approved` and `lineage`; a non-anchor one also needs `admit`; lineage >= 1 needs a derivation.",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/(samples|training)/"
+          },
+          "origin": {
+            "required": [
+              "synthetic",
+              "tier"
+            ],
+            "properties": {
+              "synthetic": {
+                "const": true
+              },
+              "tier": {
+                "const": "authored"
+              }
+            }
+          }
+        },
+        "required": [
+          "path",
+          "origin"
+        ]
+      },
+      "then": {
+        "properties": {
+          "origin": {
+            "required": [
+              "approved",
+              "lineage"
+            ],
+            "properties": {
+              "approved": {
+                "type": "object",
+                "required": [
+                  "by",
+                  "at"
+                ],
+                "properties": {
+                  "by": {
+                    "type": "string"
+                  },
+                  "at": {
+                    "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/dateTime"
+                  }
+                }
+              },
+              "lineage": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "if": {
+          "properties": {
+            "origin": {
+              "required": [
+                "lineage"
+              ],
+              "properties": {
+                "lineage": {
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          "required": [
+            "origin"
+          ]
+        },
+        "then": {
+          "required": [
+            "derivation"
+          ]
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "origin": {
+                  "not": {
+                    "required": [
+                      "anchor"
+                    ],
+                    "properties": {
+                      "anchor": {
+                        "const": true
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "origin": {
+                  "required": [
+                    "admit"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "anchorRule": {
+      "description": "core.md §4.3: an anchor is a samples/ entry with `lineage: 0`.",
+      "if": {
+        "properties": {
+          "origin": {
+            "required": [
+              "anchor"
+            ],
+            "properties": {
+              "anchor": {
+                "const": true
+              }
+            }
+          }
+        },
+        "required": [
+          "origin"
+        ]
+      },
+      "then": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/samples/"
+          },
+          "origin": {
+            "required": [
+              "lineage"
+            ],
+            "properties": {
+              "lineage": {
+                "const": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "renderRule": {
+      "description": "core.md §4.4: `origin.render` is allowed only in training/ and needs a derivation.",
+      "if": {
+        "properties": {
+          "origin": {
+            "required": [
+              "render"
+            ],
+            "properties": {
+              "render": {
+                "const": true
+              }
+            }
+          }
+        },
+        "required": [
+          "origin"
+        ]
+      },
+      "then": {
+        "required": [
+          "derivation"
+        ],
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/training/"
+          }
+        }
+      }
+    },
+    "attributesRule": {
+      "description": "core.md §3: attributes/ entries are JSON or Markdown and carry origin.",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/attributes/"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "required": [
+          "origin"
+        ],
+        "properties": {
+          "media": {
+            "enum": [
+              "application/json",
+              "text/markdown"
+            ]
+          }
+        }
+      }
+    },
+    "indexRecord": {
+      "description": "core.md §5: index records (captions, refset, descriptor, holdout) are depth-2 JSON, never critical, and carry a derivation, or (descriptor only) an authored origin.",
+      "if": {
+        "properties": {
+          "type": {
+            "pattern": "\\.(captions|refset|descriptor|holdout)$"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/[a-z0-9._-]+\\.json$"
+          },
+          "critical": {
+            "const": false
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "derivation"
+            ]
+          },
+          {
+            "properties": {
+              "type": {
+                "pattern": "\\.descriptor$"
+              },
+              "origin": {
+                "required": [
+                  "tier"
+                ],
+                "properties": {
+                  "tier": {
+                    "const": "authored"
+                  }
+                }
+              }
+            },
+            "required": [
+              "origin"
+            ]
+          }
+        ]
+      }
+    },
+    "vendorRef": {
+      "description": "core.md §6.3.",
+      "if": {
+        "properties": {
+          "type": {
+            "pattern": "\\.image\\.vendor-ref$"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "vendor",
+          "kind",
+          "value",
+          "portable",
+          "created_from"
+        ],
+        "properties": {
+          "portable": {
+            "const": false
+          },
+          "vendor": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1
+          },
+          "created_from": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/sha256Hex"
+            }
+          }
+        }
+      }
+    },
+    "adapterRef": {
+      "description": "core.md §6.2.",
+      "if": {
+        "properties": {
+          "type": {
+            "pattern": "\\.image\\.adapter-ref$"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "adapter",
+          "refset"
+        ],
+        "properties": {
+          "adapter": {
+            "type": "object",
+            "required": [
+              "key",
+              "license"
+            ],
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "license": {
+                "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/license"
+              }
+            }
+          },
+          "refset": {
+            "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/sha256Hex"
+          }
+        }
+      }
+    },
+    "imageAdapter": {
+      "description": "org.<fmt>.image.lora / .embedding MUST fields (prsn.md Generation table).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "pattern": "\\.image\\.lora$"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "base_model"
+            ],
+            "properties": {
+              "base_model": {
+                "type": "object",
+                "required": [
+                  "key",
+                  "sha256"
+                ]
+              },
+              "training_captions": {
+                "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/sha256Hex"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "pattern": "\\.image\\.embedding$"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "base_model",
+              "token"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

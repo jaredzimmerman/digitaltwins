@@ -1,0 +1,1 @@
+{"rigs":[{"T_scene_from_camera":[[1,0,0,0],[0,1,0,1.6],[0,0,1,2.5],[0,0,0,1]],"device":"example-phone","fov_deg":70,"id":"cam-wide","label":"Establishing, from the door","yaw_deg":0},{"T_scene_from_camera":[[1,0,0,1.2],[0,1,0,1.6],[0,0,1,2.5],[0,0,0,1]],"device":"example-phone","fov_deg":70,"id":"cam-window","label":"Over the sink","yaw_deg":45}]}

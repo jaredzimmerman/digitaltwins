@@ -2,7 +2,10 @@
 
 JSON Schema, draft 2020-12. Each file's `$id` is
 `https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/<name>.schema.json`, and cross-references
-are relative, so load them all into one registry (as `tools/validate.py` does).
+are relative, so load them all into one registry (as `tools/validate.py` does). From spec 1.2
+the entry and manifest schemas also reference the shared schemas in
+[`../../core/schemas/`](../../core/schemas/) by absolute `$id` (index records, `refs`, the
+authored-tier and vendor-reference rules); the validator loads both folders.
 
 Schemas are strict where the specification says MUST and open (`additionalProperties`
 allowed) where it lets records carry extra fields, because readers keep fields they do not

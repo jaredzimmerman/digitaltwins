@@ -1,0 +1,274 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/styl/schemas/styl-entry.schema.json",
+  "title": ".styl manifest entry",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/entry.schema.json"
+    },
+    {
+      "$ref": "#/$defs/subjectRule"
+    },
+    {
+      "$ref": "#/$defs/variantRule"
+    },
+    {
+      "$ref": "#/$defs/noFrame"
+    },
+    {
+      "$ref": "#/$defs/typeRules"
+    }
+  ],
+  "$defs": {
+    "subjectRule": {
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[^/]+$"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "properties": {
+          "path": {
+            "const": "style.json"
+          },
+          "type": {
+            "const": "org.styl.style"
+          }
+        }
+      }
+    },
+    "variantRule": {
+      "description": "Role entries carry `variant` (a declared id or `*`).",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/(samples|attributes|templates|training|generation)/"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "required": [
+          "variant"
+        ],
+        "properties": {
+          "variant": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "noFrame": {
+      "description": ".styl has no spatial modality.",
+      "not": {
+        "required": [
+          "frame"
+        ]
+      }
+    },
+    "typeRules": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.styl.style.exemplar"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin",
+              "content_class",
+              "rights"
+            ],
+            "properties": {
+              "content_class": {
+                "enum": [
+                  "person",
+                  "animal",
+                  "object",
+                  "vehicle",
+                  "architecture",
+                  "interior",
+                  "landscape",
+                  "food",
+                  "text",
+                  "abstract",
+                  "other"
+                ]
+              },
+              "rights": {
+                "oneOf": [
+                  {
+                    "const": "unknown"
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "holder",
+                      "license"
+                    ],
+                    "properties": {
+                      "holder": {
+                        "type": "string"
+                      },
+                      "license": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ]
+              },
+              "depicts_real_person": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.styl.style.palette"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin",
+              "color_space"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.styl.style.typography"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.styl.style.rendering"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.styl.style.bible"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "origin"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.styl.style.template"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "model",
+              "readout"
+            ],
+            "properties": {
+              "model": {
+                "type": "object",
+                "required": [
+                  "key",
+                  "sha256",
+                  "dim",
+                  "license"
+                ]
+              },
+              "readout": {
+                "enum": [
+                  "raw-cosine",
+                  "csls"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.styl.image.prompt"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "engine"
+            ],
+            "properties": {
+              "engine": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "version"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

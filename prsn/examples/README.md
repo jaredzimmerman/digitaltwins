@@ -12,6 +12,7 @@ published test key (seed = SHA-256 of `prsn-example-signing-key`); regenerate th
 | `valid-v11/` | A spec 1.1 file: one face sample, one GNM head mesh with a `derivation`, one look and one era, a capture-ref **list**. Valid with no notes. |
 | `valid-v10-legacy/` | A spec 1.0 file: no `spec`, no looks/eras/frames/derivations, and a capture-ref written as a single object under the legacy type name `org.museli.face.capture-ref`. Valid; a 1.1 reader fills `look: "*"`, `era: "era-0"`, `frame` from `topology` (`gnm-head-v3` → `head-canonical`) and flags the entries legacy. |
 | `voice-v11/` | A spec 1.1 voice file: a template with its evidence mix, one bank sample (float capture, so `source_format: "f32"`) with quality components, a seed pinned to its source sample, a generation record, and voice budgets. Voice entries are identity-level (`look: "*"`), carry derivations, and have no `frame` (voice is non-spatial). |
+| `fictional-v12/` | A spec 1.2 fictional character (`person.json` `kind: "fictional"`): an authored model-sheet anchor and a full-body anchor, two approved synthetic views at lineage 1 with admit scores, a held-out split, natural-language captions that exclude identity, a reference set for a 4-character-slot model, an authored descriptor, a LoRA trained on the non-held-out samples with `training_captions` and an `arcface-cos` eval, and a non-portable vendor reference. Looks have no sessions. |
 
 A ZIP-form copy of `valid-v11` is `conformance/container/valid.prsn`.
 

@@ -144,7 +144,9 @@ Other fields (for example how an application runs the recipe) are allowed.
 - `determinism`: as R5. `eval.metric` is one of the fixed names: `psnr`, `lpips`, `ssim`
   (image synthesis families); `p2p-mm` (point-to-plane distance against held-out depth;
   geometry families); `landmark-px` (fits, landmarks on held-out frames);
-  `coverage-fraction`; `auraface-sim` (stills-bank consistency); `none` (export families,
+  `coverage-fraction`; `auraface-sim` (stills-bank consistency); from spec 1.2 the
+  cross-format consistency metrics of [core.md §8](../../core/spec/core.md#8-cross-format-consistency-checks):
+  `arcface-cos`, `csd-csls`, `dino-cos`, `vlm-judge`; `none` (export families,
   which are adopted when their inputs are).
 
 Method families defined so far (short names, under `org.prsn.method.`): `masks`,

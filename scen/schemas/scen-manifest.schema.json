@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/scen/schemas/scen-manifest.schema.json",
+  "title": ".scen manifest.json",
+  "type": "object",
+  "required": [
+    "format",
+    "version",
+    "created",
+    "scene",
+    "entries"
+  ],
+  "properties": {
+    "format": {
+      "const": "scen"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "spec": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+    },
+    "created": {
+      "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/dateTime"
+    },
+    "generator": {
+      "type": "string"
+    },
+    "scene": {
+      "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/entryPath"
+    },
+    "budgets": {
+      "type": "object"
+    },
+    "states": {
+      "type": "array",
+      "items": {
+        "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/state.schema.json"
+      }
+    },
+    "refs": {
+      "$ref": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/refs.schema.json"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "scen-entry.schema.json"
+      }
+    },
+    "signature": {
+      "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/signature"
+    },
+    "redact": {
+      "type": "boolean"
+    },
+    "props": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "label": {
+            "type": "string"
+          },
+          "fixed": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

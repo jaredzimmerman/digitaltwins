@@ -1,0 +1,291 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/entry.schema.json",
+  "title": "Manifest entry rules shared by .styl and .scen (core.md)",
+  "description": "Container fields and role rules. Each format's entry schema adds its subject type, state field, frame rule and MUST fields per record type.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/$defs/container"
+    },
+    {
+      "$ref": "#/$defs/depthRule"
+    },
+    {
+      "$ref": "#/$defs/originRule"
+    },
+    {
+      "$ref": "#/$defs/notGeneratedRule"
+    },
+    {
+      "$ref": "#/$defs/generationRule"
+    },
+    {
+      "$ref": "#/$defs/derivationRule"
+    },
+    {
+      "$ref": "rules.schema.json#/$defs/authoredSynthetic"
+    },
+    {
+      "$ref": "rules.schema.json#/$defs/anchorRule"
+    },
+    {
+      "$ref": "rules.schema.json#/$defs/renderRule"
+    },
+    {
+      "$ref": "rules.schema.json#/$defs/attributesRule"
+    },
+    {
+      "$ref": "rules.schema.json#/$defs/indexRecord"
+    },
+    {
+      "$ref": "rules.schema.json#/$defs/vendorRef"
+    },
+    {
+      "$ref": "rules.schema.json#/$defs/adapterRef"
+    },
+    {
+      "$ref": "rules.schema.json#/$defs/imageAdapter"
+    }
+  ],
+  "$defs": {
+    "container": {
+      "type": "object",
+      "required": [
+        "path",
+        "type",
+        "media",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/entryPath"
+        },
+        "type": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/recordType"
+        },
+        "media": {
+          "type": "string",
+          "pattern": "^[a-z0-9!#$&^_.+-]+/[a-z0-9!#$&^_.+-]+$"
+        },
+        "sha256": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/sha256Hex"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "critical": {
+          "type": "boolean"
+        },
+        "origin": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/origin"
+        },
+        "quality": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/quality"
+        },
+        "model": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/modelRef"
+        },
+        "license": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/license"
+        },
+        "synthetic_capable": {
+          "type": "boolean"
+        },
+        "expires": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/date"
+        },
+        "enc": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/enc"
+        },
+        "protected": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/protected"
+        },
+        "derivation": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/derivation.schema.json"
+        },
+        "frame": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "depthRule": {
+      "description": "Depth 2 holds only <modality>/<name>.json index records (capture-ref, coverage, captions, refset, descriptor, holdout). Depth 1 is checked by each format (its subject record only).",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[^/]+/[^/]+$"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "properties": {
+          "path": {
+            "pattern": "\\.json$"
+          },
+          "type": {
+            "pattern": "^org\\.(prsn|styl|scen)\\.[a-z0-9-]+\\.(capture-ref|coverage|captions|refset|descriptor|holdout)$"
+          }
+        }
+      }
+    },
+    "originRule": {
+      "description": "samples/, training/ and attributes/ entries carry origin.",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/(samples|training|attributes)/"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "required": [
+          "origin"
+        ]
+      }
+    },
+    "notGeneratedRule": {
+      "description": "Synthetic material in samples/ or training/ only with tier authored (core.md §4.2).",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/(samples|training)/"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "properties": {
+          "origin": {
+            "if": {
+              "required": [
+                "synthetic"
+              ],
+              "properties": {
+                "synthetic": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "anyOf": [
+                {
+                  "required": [
+                    "tier"
+                  ],
+                  "properties": {
+                    "tier": {
+                      "const": "authored"
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "was"
+                  ],
+                  "properties": {
+                    "was": {
+                      "const": "authored"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "generationRule": {
+      "description": "generation/ entries carry synthetic_capable: true.",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/(generation)/"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "required": [
+          "synthetic_capable"
+        ],
+        "properties": {
+          "synthetic_capable": {
+            "const": true
+          }
+        }
+      }
+    },
+    "derivationRule": {
+      "description": "templates/ and generation/ entries carry a derivation; geometry/ too, unless it is authored (a modelled fictional set).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "path": {
+                "pattern": "^[a-z0-9._-]+/(templates|generation)/"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          },
+          "then": {
+            "required": [
+              "derivation"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "path": {
+                "pattern": "^[a-z0-9._-]+/(geometry)/"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "derivation"
+                ]
+              },
+              {
+                "required": [
+                  "origin"
+                ],
+                "properties": {
+                  "origin": {
+                    "properties": {
+                      "tier": {
+                        "const": "authored"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

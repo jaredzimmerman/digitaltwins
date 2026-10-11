@@ -101,7 +101,7 @@
     }
   ],
   "$defs": {
-    "metric": {"enum": ["psnr", "lpips", "ssim", "p2p-mm", "landmark-px", "coverage-fraction", "auraface-sim", "none"]},
+    "metric": {"enum": ["psnr", "lpips", "ssim", "p2p-mm", "landmark-px", "coverage-fraction", "auraface-sim", "arcface-cos", "csd-csls", "dino-cos", "vlm-judge", "none"]},
     "capabilityPattern": {
       "description": "A capability tag; `*` is a wildcard and a trailing `?` marks the tag optional.",
       "type": "string",

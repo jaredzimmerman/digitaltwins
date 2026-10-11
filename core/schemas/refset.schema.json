@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/core/schemas/refset.schema.json",
+  "title": "Reference-set index record (core.md §5.2)",
+  "description": "A ranked selection of samples for one target model. Holds hashes only.",
+  "type": "object",
+  "required": [
+    "target",
+    "items"
+  ],
+  "properties": {
+    "target": {
+      "type": "object",
+      "required": [
+        "key",
+        "slots"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string"
+        },
+        "slots": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "state": {
+      "type": "string",
+      "minLength": 1
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "sha256",
+          "slot",
+          "rank"
+        ],
+        "properties": {
+          "sha256": {
+            "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/sha256Hex"
+          },
+          "slot": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rank": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "weight": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "composite": {
+      "type": "object",
+      "required": [
+        "cache"
+      ],
+      "properties": {
+        "cache": {
+          "$ref": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/defs.schema.json#/$defs/contentId"
+        },
+        "layout": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

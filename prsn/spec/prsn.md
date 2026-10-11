@@ -1,6 +1,6 @@
 # `.prsn`: a portable person file
 
-Status: **Draft v1.1**
+Status: **Draft v1.2**
 
 A `.prsn` file holds one person: several modalities (voice, face, head, body), several
 models' data for each, the raw material that data came from, and generative assets built
@@ -33,6 +33,33 @@ meaning. A writer signals the revision with `manifest.spec: "1.1"` (see
 - licence propagation, GNM Head as a first-class head model, the `geometry/` and
   `training/` roles for every modality, the `body` modality, and the glTF
   `KHR_gaussian_splatting` splat payload.
+
+### Revision 1.2
+
+Revision 1.2 keeps `manifest.version` at `1` (writers set `manifest.spec: "1.2"`). It is
+additive for readers, which skip types they don't know and keep them on rewrite. It is
+not additive for 1.1 validators: depth-2 index records, the `authored` tier and authored
+synthetic samples fail 1.1 validation. A writer exporting for a 1.1 consumer omits them;
+index records are re-derivable, and a fictional character's authored samples have no 1.1
+representation. It adopts the cross-format rules of [digitaltwins core](../../core/spec/core.md),
+which `.styl` and `.scen` share, and adds:
+
+- fictional people: `person.json` `kind: "fictional"`, `rights` and `consent`
+  ([`person.json`](#personjson));
+- the `authored` provenance tier, anchors and lineage, valid only for a fictional person
+  ([Provenance tiers](#provenance-tiers), core §4);
+- index records for captions, reference sets, descriptors and held-out splits at depth 2
+  (core §5);
+- the `attributes/` role (core §3);
+- `org.prsn.body.sample` for full-body stills, and the coverage regions `arms`, `torso`,
+  `lower-body`, `full-body`;
+- `org.prsn.image.vendor-ref` and `org.prsn.image.adapter-ref`, and ModelSpec headers
+  and `training_captions` on `org.prsn.image.lora` (core §6);
+- `manifest.refs`, references to other `.prsn`, `.styl` and `.scen` files (core §7);
+- the consistency metrics `arcface-cos`, `csd-csls`, `dino-cos` and `vlm-judge` (core §8).
+
+A look of a fictional person has no capture sessions: its `sessions` list is empty, and its
+samples are authored.
 
 ## Purpose and prior art
 
@@ -106,7 +133,8 @@ Rules:
   - depth 1: only `person.json` (the entry `manifest.person` names);
   - depth 2: only **modality-level index records**, `<modality>/<name>.json`: capture
     references (`face/capture-refs.json`) and coverage records
-    (`face/coverage-<look>.json`);
+    (`face/coverage-<look>.json`), and from revision 1.2 captions, reference sets,
+    descriptors and held-out splits ([core §5](../../core/spec/core.md#5-index-records));
   - depth 3 or more: every other entry, `<modality>/<role>/<name>`, with deeper paths
     allowed below a role (for example `face/generation/avatar/gaussians.ply`).
 - **Size.** A `.prsn` is meant to be shared. Bulky raw capture data goes in a companion
@@ -227,6 +255,7 @@ Top-level fields:
 | `looks`, `eras` | spec ≥ 1.1 when entries use them | [Looks and eras](#looks-and-eras) |
 | `entries` | yes | One row per entry |
 | `signature` | no | The signature block ([Security](#security)) |
+| `refs` | no (spec ≥ 1.2) | Other `.prsn`, `.styl` or `.scen` files this one refers to ([core §7](../../core/spec/core.md#7-references-between-files)) |
 | `redact` | no | `true`: `person.json` is encrypted too |
 
 A reader keeps top-level keys it does not know and writes them back unchanged. One key is
@@ -256,7 +285,8 @@ depend on the order and MUST accept unsorted files written before revision 1.1.
 Every other field on an entry is the record's own metadata. A reader keeps fields it does
 not know and writes them back unchanged.
 
-`coverage` values: `face`, `scalp`, `hair`, `ears`, `neck`, `shoulders`, `upper-torso`.
+`coverage` values: `face`, `scalp`, `hair`, `ears`, `neck`, `shoulders`, `upper-torso`, and from
+revision 1.2 `arms`, `torso`, `lower-body`, `full-body`.
 
 ### Looks and eras
 
@@ -270,7 +300,7 @@ ignore both indexes and the `look`/`era` fields without harm. The data model is 
 
 ### Spec revision within version 1
 
-`manifest.spec` names the revision of this document the writer followed: `"1.1"` for this
+`manifest.spec` names the revision of this document the writer followed: `"1.2"` for this
 draft. Absent means `"1.0"`. It never changes how a file is read; it only decides what a
 validator requires:
 
@@ -282,6 +312,9 @@ validator requires:
   (`arkit-1220` → `arkit-face`, `flame-*` → `flame-canonical`, `gnm-head-v3` →
   `head-canonical`), else `unknown`; no `derivation`, so the entry can't be rebuilt and is
   never auto-superseded (R3 treats it as stale but usable).
+- `spec` ≥ 1.2 requires what 1.1 requires; the 1.2 records are optional, and a 1.1 reader
+  skips the ones it does not know (they are never `critical`). A file with an `authored`
+  entry MUST declare `spec` ≥ 1.2.
 - A writer that rewrites a 1.0 file emits `spec: "1.1"` only after it has supplied the
   required fields for every entry it wrote; entries it copied through keep their `legacy`
   state and the file keeps `spec` absent.
@@ -297,7 +330,21 @@ Contains no biometrics. Writers always write this shape:
 ```
 
 `id` (a `urn:uuid`) and `display_name` are required; `aliases`, `ids` and `links` are
-arrays; other fields are allowed and kept on rewrite. Files from before revision 1.1 may
+arrays; other fields are allowed and kept on rewrite.
+
+From revision 1.2:
+
+- `kind`: `"real"` (the default when absent) or `"fictional"`. A fictional person has no
+  physical referent. Their file is defined by authored anchors instead of captures, may
+  hold `authored` material ([Provenance tiers](#provenance-tiers)), and needs no
+  `.prsncap`. A writer MUST NOT set `kind: "fictional"` on a file that holds captured
+  material of a real person, and MUST NOT write `authored` material into a real person's
+  file.
+- `rights`: `{"holder", "license"}`, who owns the character. Exporters treat the licence
+  like a model licence (R6).
+- `consent`: `vendors`, the vendor names allowed to receive samples (for
+  `org.prsn.image.vendor-ref`; absent means none), and, for material that came from no
+  capture session, `cloud_families` (as in `session.json`). Files from before revision 1.1 may
 use a legacy shape; readers MUST map it before use:
 
 - `name` → `display_name` (when `display_name` is absent);
@@ -330,6 +377,8 @@ New data is added under these rules, without a version bump:
    - `training/`: material whose purpose is to train a generator (voice-clone corpus,
      expression clips). It is evidence of the person, just like `samples/`.
    - `generation/`: assets that reproduce the trait (voice-clone seed, avatar, LoRA).
+   - `attributes/` (spec ≥ 1.2): structured, human-editable parameters, such as a fictional
+     character's written bible ([core §3](../../core/spec/core.md#3-roles)).
 
    A new modality (face, gait, signature, typing rhythm) adds a directory. It doesn't
    change the format.
@@ -360,6 +409,12 @@ JPEG-XL, or an ISO/IEC 39794-5 record.
 The same stills serve as the training images for an image LoRA, which refers to them by
 hash. A stills bank is evidence of the person; renders made from a generator never are.
 
+For a fictional person (revision 1.2) the stills are authored: a model sheet and the views
+drawn or generated from it. The sheet is an anchor (`origin.anchor: true`, `lineage: 0`);
+generated views carry `origin.synthetic: true`, `approved`, `lineage` and `admit`, and
+pass the identity admit check against the anchors
+([core §4](../../core/spec/core.md#4-provenance-additions)).
+
 ### Geometry (`face/geometry/`)
 
 | Type | Payload | MUST | SHOULD |
@@ -389,10 +444,17 @@ hash. A stills bank is evidence of the person; renders made from a generator nev
 | Type | Payload | MUST | SHOULD |
 |---|---|---|---|
 | `org.prsn.face.avatar` | A directory: `avatar.json`, the bound mesh (`.glb`), and `gaussians.ply` with per-Gaussian binding attributes; optionally per-basis Gaussian blendshape deltas (`deltas/<basis-name>.ply`) | `topology` (`gnm-head-v3` by default), `driver` (`arkit-52`, `gnm-expr-383` or `flame-expr-100`), `binding`, `formulation` (`lbs-bound` or `gaussian-blendshapes`), `coverage` | the bound mesh's hash (`mesh_sha256`), trainer, version and training clips via `derivation`, `look` (the appearance layer's look; identity and expression basis are per era) |
-| `org.prsn.image.lora` | safetensors LoRA (kohya/diffusers keys) | `base_model` (`{"key", "sha256"}`), `trigger` | `rank`, `training_samples` (hashes of the training images in `face/samples/`) |
+| `org.prsn.image.lora` | safetensors LoRA (kohya/diffusers keys) | `base_model` (`{"key", "sha256"}`), `trigger` | `rank`, `training_samples` (hashes of the training images in `face/samples/`), `training_captions` (hash of the captions record used); ModelSpec header keys ([core §6.1](../../core/spec/core.md#61-image-adapters)) |
 | `org.prsn.image.embedding` | safetensors textual-inversion vector | `base_model`, `token` | |
 | `org.prsn.image.faceid` | none: reuses a `face.template` | `template` (the template entry's path) | |
 | `org.prsn.avatar.vrm` | VRM 1.0 (glTF-based humanoid avatar) | `coverage` | source mesh hash |
+| `org.prsn.image.adapter-ref` | JSON: how a zero-shot adapter uses this file's samples (spec ≥ 1.2) | `adapter` (`key`, `license`), `refset` | `weights` |
+| `org.prsn.image.vendor-ref` | JSON or none: an identifier only a vendor's service can use (spec ≥ 1.2) | `vendor`, `kind`, `value`, `portable: false`, `created_from` | `vendor_model` |
+
+The rules for adapter and vendor references are in
+[core §6](../../core/spec/core.md#6-generation-records-shared-by-all-formats). Samples go to
+a vendor only when `person.json` `consent.vendors` lists it, for real and fictional people
+alike.
 
 **Avatar binding.** The per-Gaussian binding attributes in `gaussians.ply` (parent
 triangle, local offset, local rotation and scale) are trainer-defined and identified by
@@ -417,6 +479,7 @@ A `body` modality with the same roles, used for the neck, shoulders and upper to
 
 | Type | Payload | MUST | SHOULD |
 |---|---|---|---|
+| `org.prsn.body.sample` | Full-body or partial-body stills (spec ≥ 1.2), same formats as face samples | `origin`, `framing` (`full-body`, `three-quarter-body`, `waist-up`) | `pose`, `camera`, `quality`, `pad` |
 | `org.prsn.body.params` | `.npz` of body-model coefficients (MHR identity and pose by default) | `model` with `license`, `coverage` (`neck`, `shoulders`, `upper-torso`) | the stitch transform to the head model's neck joint (`T_headcanon_from_body`) |
 | `org.prsn.body.mesh` | glTF 2.0 `.glb` | `topology` (`mhr`, `anny`), `coverage`, `model` with `license` | |
 
@@ -562,6 +625,7 @@ quality score: one sample captured on purpose is worth more than several overhea
 |---|---|---|---|
 | `professional` | 4 | Studio or broadcast capture, or a dataset recorded for the purpose (a podcast master, a voiceover session) | The person, on material they add (`"set_by": "user"`) |
 | `enrolled` | 3 | The producing application's own guided capture | Only that application's capture path |
+| `authored` | 3 | Canonical material made by a fictional person's author (spec ≥ 1.2; [core §4.1](../../core/spec/core.md#41-the-authored-tier)). Never valid for a real person | The author (`"set_by": "user"`) |
 | `imported` | 2 | Files the person chose to add | The application, on import |
 | `observed` | 1 | Material collected incidentally | The application |
 
@@ -582,7 +646,10 @@ quality score: one sample captured on purpose is worth more than several overhea
   15.2}` (seconds for voice), so recognition can tell a template built from deliberate
   capture from one assembled from incidental material.
 - `origin.synthetic: true` marks generated material. It is never valid in `samples/` or
-  `training/` ([Synthetic output](#synthetic-output-and-acceptable-use)).
+  `training/` ([Synthetic output](#synthetic-output-and-acceptable-use)), except on
+  `authored` material of a fictional person.
+- `authored` is a top tier for downgrade: in an untrusted file it becomes `imported`, with
+  `origin.was: "authored"`, like `enrolled` and `professional`.
 
 ## Enrichment, budgets and eviction
 
@@ -758,7 +825,10 @@ inputs' constraints, and exporters check that union against the intended use.
 - Generated output never goes into `samples/` or `training/`. A clone's audio or a LoRA's
   image is not evidence of the person, and feeding it back would train the file on itself.
   A writer MUST refuse to write a `samples/` or `training/` entry whose origin is marked
-  generated (`origin.synthetic: true`).
+  generated (`origin.synthetic: true`). The one exception (spec ≥ 1.2) is `authored`
+  material of a fictional person, which the author approved item by item and which stays
+  tied to the anchors by `lineage` and the admit check
+  ([core §4.2, §4.3](../../core/spec/core.md#42-synthetic-material-in-samples-and-training)).
 - Anything rendered from a generation asset MUST be marked as AI-generated with a C2PA
   content credential.
 - Writers MUST honour the acceptable-use terms of the models involved (for example FLAME
@@ -831,12 +901,15 @@ must notice something about, and byte-level vectors. Rule ids used there:
 | `signature` | the signature file is present, `key_id` matches `public_key`, Ed25519 verifies |
 | `critical` | no `critical: true` entry of a type the reader does not know |
 | `person` | `person.json` is a listed entry with `id` and `display_name` (after the legacy mapping, for files before 1.1) |
-| `spec-fields` | `origin` on `samples/` and `training/`; spec ≥ 1.1: `derivation`, `look`/`era`, and `frame` (spatial modalities) where required |
+| `spec-fields` | `origin` on `samples/` and `training/`; spec ≥ 1.1: `derivation`, `look`/`era`, and `frame` (spatial modalities) where required; a file using any 1.2 record or the `authored` tier declares `spec` ≥ 1.2 |
 | `looks-eras` | every `look` is `"*"` or declared; every `era` is declared; each look is in exactly one era |
 | `capture-ref` | the payload is a list (or one object) of refs with a SHA-256 `manifest_sha256` |
 | `generation` | `generation/` entries carry `synthetic_capable: true`; no generated material in `samples/` or `training/` |
 | `type-fields` | every entry carries the MUST fields of its record type (`source_format` on audio from a floating-point capture) |
 | `entry-order` | spec ≥ 1.1: `entries` sorted by path in UTF-8 byte order |
+| `authored` | spec ≥ 1.2: `authored` only for a fictional person; authored synthetic material has `approved` and `lineage` (and a `derivation` past lineage 0, and `admit` unless it is an anchor); lineage is 1 + the highest lineage among its authored inputs; anchors are lineage-0 samples, and a file with authored material has at least one; `origin.render` is refused |
+| `consent` | spec ≥ 1.2: every vendor reference's `vendor` is listed in `person.json` `consent.vendors` |
+| `index` | spec ≥ 1.2: captions, reference set, descriptor and held-out records match their schemas, are never critical, carry a `derivation` (or an authored descriptor's `origin`), and every hash they list resolves to a sample (or training entry, for captions) of the same file; reference-set slots exist in `target.slots`; anchors are never held out; held-out samples appear in no caption, reference set, `training_samples` or generator input |
 
 ## Appendix A: Legacy v1 namespace
 
@@ -871,3 +944,8 @@ readable:
 14. **Recipe version:** Semantic Versioning (`MAJOR.MINOR.PATCH`, pre-release allowed); a major bump means outputs are not comparable.
 15. **Empty split groups:** a phase with rows but no held-out frame is listed with `"frames": []`.
 16. **Float audio:** stored as 24-bit integer FLAC, with the source sample format recorded in `source_format` (for example `"f32"`).
+17. **Shared core (1.2):** the container, manifest, derivation, tier, budget, licence and security rules are shared with `.styl` and `.scen` through [core.md](../../core/spec/core.md); this document stays their normative text.
+18. **Fictional people (1.2):** a `kind` field in `person.json`, not a separate format, so tools that handle people handle characters too; `authored` is refused for real people.
+19. **Synthetic samples (1.2):** allowed only as approved `authored` material with lineage and an admit score against the anchors; writers refuse lineage above 2 by default.
+20. **Captions and reference sets (1.2):** index records derived from samples, never source; composite sheets live in the cache.
+21. **Vendor references (1.2):** recorded so a file can say what it was registered as elsewhere; each names the samples it was made from, which stay in the file.

@@ -61,6 +61,45 @@
         },
         "additionalProperties": true
       }
+    },
+    "kind": {
+      "enum": [
+        "real",
+        "fictional"
+      ],
+      "description": "spec >= 1.2. Absent means `real`. A fictional person may hold `authored` material (core.md §4)."
+    },
+    "rights": {
+      "type": "object",
+      "description": "Who owns a fictional character (holder, licence).",
+      "properties": {
+        "holder": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "consent": {
+      "type": "object",
+      "description": "Remote-processing consent for material not tied to a capture session (core.md §6.3). `cloud_families` as in session.json; `vendors` lists vendor names allowed to receive samples.",
+      "properties": {
+        "cloud_families": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vendors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
     }
   },
   "additionalProperties": true
