@@ -1,0 +1,21 @@
+[package]
+name = "prsn"
+version = "0.1.0"
+edition = "2021"
+description = "Reader/writer library for the .prsn digital-twin file format (v1 scope)"
+license = "Apache-2.0"
+repository = "https://github.com/jaredzimmerman/digitaltwins"
+
+[[bin]]
+name = "prsn"
+path = "src/bin/prsn/main.rs"
+
+[dependencies]
+sha2 = "0.10"
+ed25519-dalek = "2"
+zip = "2"
+base64 = "0.22"
+ryu = "1"
+
+[profile.release]
+opt-level = 2

@@ -2,3 +2,7 @@
 __pycache__/
 *.pyc
 .venv/
+*.egg-info/
+target/
+node_modules/
+dist/
