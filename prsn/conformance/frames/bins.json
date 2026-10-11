@@ -1,0 +1,202 @@
+{
+ "rule": "Inputs are display-upright contract angles (upright_euler.json). yaw bin = min(floor((yaw+180)/15), 23); pitch bin = min(floor((pitch+90)/15), 11). Inputs below the range clamp to bin 0 (both languages; outside the contract's range). condition from |yaw|: frontal < 15 <= three-quarter < 60 <= profile < 120 <= back. Stills bank only: pitch >= 15 -> 'down' (chin down), pitch <= -15 -> 'up', overriding yaw. Bin key (enrichment-model.md): 'yaw:<id>|pitch:<id>'.",
+ "contract": "spec/frames-and-units.md \u00a73",
+ "yaw_bins": [
+  {
+   "yaw": -180.0,
+   "bin": 0
+  },
+  {
+   "yaw": -179.99,
+   "bin": 0
+  },
+  {
+   "yaw": -165.0,
+   "bin": 1
+  },
+  {
+   "yaw": -0.001,
+   "bin": 11
+  },
+  {
+   "yaw": 0.0,
+   "bin": 12
+  },
+  {
+   "yaw": 14.999,
+   "bin": 12
+  },
+  {
+   "yaw": 15.0,
+   "bin": 13
+  },
+  {
+   "yaw": 179.0,
+   "bin": 23
+  },
+  {
+   "yaw": 179.999999,
+   "bin": 23
+  },
+  {
+   "yaw": 180.0,
+   "bin": 23
+  },
+  {
+   "yaw": -200.0,
+   "bin": 0
+  },
+  {
+   "yaw": 200.0,
+   "bin": 23
+  }
+ ],
+ "pitch_bins": [
+  {
+   "pitch": -90.0,
+   "bin": 0
+  },
+  {
+   "pitch": -75.0,
+   "bin": 1
+  },
+  {
+   "pitch": -0.5,
+   "bin": 5
+  },
+  {
+   "pitch": 0.0,
+   "bin": 6
+  },
+  {
+   "pitch": 44.9,
+   "bin": 8
+  },
+  {
+   "pitch": 89.99,
+   "bin": 11
+  },
+  {
+   "pitch": 90.0,
+   "bin": 11
+  },
+  {
+   "pitch": -95.0,
+   "bin": 0
+  },
+  {
+   "pitch": 95.0,
+   "bin": 11
+  }
+ ],
+ "conditions": [
+  {
+   "yaw": 0.0,
+   "pitch": 0.0,
+   "stills_bank": false,
+   "condition": "frontal"
+  },
+  {
+   "yaw": 14.9,
+   "pitch": 0.0,
+   "stills_bank": false,
+   "condition": "frontal"
+  },
+  {
+   "yaw": -14.9,
+   "pitch": 0.0,
+   "stills_bank": false,
+   "condition": "frontal"
+  },
+  {
+   "yaw": 15.0,
+   "pitch": 0.0,
+   "stills_bank": false,
+   "condition": "three-quarter"
+  },
+  {
+   "yaw": -15.0,
+   "pitch": 0.0,
+   "stills_bank": false,
+   "condition": "three-quarter"
+  },
+  {
+   "yaw": 59.9,
+   "pitch": 0.0,
+   "stills_bank": false,
+   "condition": "three-quarter"
+  },
+  {
+   "yaw": 60.0,
+   "pitch": 0.0,
+   "stills_bank": false,
+   "condition": "profile"
+  },
+  {
+   "yaw": -119.9,
+   "pitch": 0.0,
+   "stills_bank": false,
+   "condition": "profile"
+  },
+  {
+   "yaw": 120.0,
+   "pitch": 0.0,
+   "stills_bank": false,
+   "condition": "back"
+  },
+  {
+   "yaw": -180.0,
+   "pitch": 0.0,
+   "stills_bank": false,
+   "condition": "back"
+  },
+  {
+   "yaw": 0.0,
+   "pitch": 30.0,
+   "stills_bank": false,
+   "condition": "frontal"
+  },
+  {
+   "yaw": 0.0,
+   "pitch": 15.0,
+   "stills_bank": true,
+   "condition": "down"
+  },
+  {
+   "yaw": 40.0,
+   "pitch": 20.0,
+   "stills_bank": true,
+   "condition": "down"
+  },
+  {
+   "yaw": 0.0,
+   "pitch": -15.0,
+   "stills_bank": true,
+   "condition": "up"
+  },
+  {
+   "yaw": 70.0,
+   "pitch": -14.9,
+   "stills_bank": true,
+   "condition": "profile"
+  },
+  {
+   "yaw": 5.0,
+   "pitch": 14.9,
+   "stills_bank": true,
+   "condition": "frontal"
+  }
+ ],
+ "keys": [
+  {
+   "yaw": 0.0,
+   "pitch": 0.0,
+   "key": "yaw:12|pitch:6"
+  },
+  {
+   "yaw": -180.0,
+   "pitch": 90.0,
+   "key": "yaw:0|pitch:11"
+  }
+ ]
+}

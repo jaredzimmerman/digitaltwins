@@ -1,0 +1,865 @@
+{
+ "description": "Recipe descriptors that must be rejected. Each variant breaks one rule of spec/derivation-recipes.md section 2; `expect_code` names the rule (see README.md).",
+ "version": 1,
+ "variants": [
+  {
+   "name": "cuda_without_reason",
+   "expect_code": "cuda-without-reason",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "cuda",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "metric": "psnr",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    },
+    "return_local_trigger": "t"
+   }
+  },
+  {
+   "name": "cuda_without_trigger",
+   "expect_code": "cuda-without-trigger",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "cuda",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "metric": "psnr",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    },
+    "local_infeasible_reason": "r"
+   }
+  },
+  {
+   "name": "cuda_empty_reason",
+   "expect_code": "cuda-without-reason",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "cuda",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "metric": "psnr",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    },
+    "local_infeasible_reason": "",
+    "return_local_trigger": "t"
+   }
+  },
+  {
+   "name": "unknown_compute",
+   "expect_code": "bad-compute",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "tpu",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "metric": "psnr",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    }
+   }
+  },
+  {
+   "name": "unpinned_model",
+   "expect_code": "unpinned-model",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "metal",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [
+     {
+      "role": "segmenter",
+      "key": "x",
+      "sha256": "…",
+      "license": "Apache-2.0"
+     }
+    ],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "metric": "psnr",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    }
+   }
+  },
+  {
+   "name": "unknown_metric",
+   "expect_code": "bad-metric",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "metal",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "metric": "iou",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    }
+   }
+  },
+  {
+   "name": "bad_version",
+   "expect_code": "bad-version",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "metal",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "metric": "psnr",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    }
+   }
+  },
+  {
+   "name": "negative_rank",
+   "expect_code": "bad-rank",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": -1,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "metal",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "metric": "psnr",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    }
+   }
+  },
+  {
+   "name": "family_without_prefix",
+   "expect_code": "bad-family",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "metal",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "metric": "psnr",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    }
+   }
+  },
+  {
+   "name": "missing_eval",
+   "expect_code": "bad-eval",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "metal",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    }
+   }
+  },
+  {
+   "name": "bad_determinism",
+   "expect_code": "bad-determinism",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "metal",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "maybe",
+    "eval": {
+     "metric": "psnr",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    }
+   }
+  },
+  {
+   "name": "dep_on_own_family",
+   "expect_code": "dep-cycle",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": [
+      "rgb.*",
+      "depth.truedepth"
+     ],
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "metal",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.static-splat",
+      "role": "x"
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "metric": "psnr",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    }
+   }
+  },
+  {
+   "name": "requires_not_list",
+   "expect_code": "bad-requires",
+   "recipe": {
+    "id": "org.example.recipe.toy.splat-a",
+    "version": "1.0.0",
+    "family": "org.prsn.method.static-splat",
+    "rank": 10,
+    "produces": {
+     "type": "org.example.toy.static-splat",
+     "path_template": "toy/static-splat-{look}.bin"
+    },
+    "requires": {
+     "all": "rgb.*",
+     "any": [
+      "tracking.arkit-face",
+      "landmarks.any"
+     ],
+     "min_captures": 1
+    },
+    "needs": {
+     "compute": "metal",
+     "ram_gb": 8,
+     "disk_gb": 1,
+     "est_minutes": 20
+    },
+    "models": [],
+    "deps": [
+     {
+      "family": "org.prsn.method.masks",
+      "role": "masks",
+      "min_rank": 10
+     }
+    ],
+    "params_default": {
+     "iterations": 7000,
+     "seed": 1
+    },
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "metric": "psnr",
+     "higher_is_better": true,
+     "min_improvement": 0.3,
+     "no_regression_per_capture": 0.5
+    },
+    "executor": {
+     "kind": "engine",
+     "entry": "example.recipes.toy:run"
+    },
+    "license_constraints": [],
+    "select": {
+     "streams": [
+      "d0/rgb.front",
+      "d0/depth.front"
+     ],
+     "phases": [
+      "orbit",
+      "face"
+     ],
+     "exclude_split": "holdout"
+    }
+   }
+  }
+ ]
+}

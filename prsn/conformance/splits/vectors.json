@@ -1,0 +1,948 @@
+{
+ "version": 1,
+ "rule": "prsncap.md \u00a75: per stream and phase, o = seed mod stride (video, depth, tracking) or seed mod stills_stride (stills, one group, no phase); index i (0-based within the phase, in index order) is held out when i mod stride == o; dropped frames are skipped but keep their index; phases in first-appearance order; streams with no rows are omitted.",
+ "cases": [
+  {
+   "name": "contract-worked-example",
+   "seed": 20261002,
+   "stride": 10,
+   "stills_stride": 8,
+   "streams": [
+    {
+     "stream": "d0/rgb.front",
+     "rows": [
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      }
+     ]
+    },
+    {
+     "stream": "d0/tracking.arkit",
+     "rows": [
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      },
+      {
+       "phase": "expr"
+      }
+     ]
+    },
+    {
+     "stream": "d0/stills",
+     "rows": [
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      }
+     ]
+    }
+   ],
+   "expected": {
+    "version": 1,
+    "method": "seeded-stride",
+    "seed": 20261002,
+    "stride": 10,
+    "stills_stride": 8,
+    "holdout": [
+     {
+      "stream": "d0/rgb.front",
+      "phase": "orbit",
+      "frames": [
+       2,
+       12,
+       22
+      ]
+     },
+     {
+      "stream": "d0/tracking.arkit",
+      "phase": "expr",
+      "frames": [
+       2,
+       12,
+       22
+      ]
+     },
+     {
+      "stream": "d0/stills",
+      "frames": [
+       2,
+       10,
+       18
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "dropped-frames-keep-their-index",
+   "seed": 20261002,
+   "stride": 10,
+   "stills_stride": 8,
+   "streams": [
+    {
+     "stream": "d0/rgb.front",
+     "rows": [
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck",
+       "dropped": true
+      },
+      {
+       "phase": "neck",
+       "dropped": true
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      }
+     ]
+    },
+    {
+     "stream": "d0/stills",
+     "rows": [
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face",
+       "dropped": true
+      }
+     ]
+    }
+   ],
+   "expected": {
+    "version": 1,
+    "method": "seeded-stride",
+    "seed": 20261002,
+    "stride": 10,
+    "stills_stride": 8,
+    "holdout": [
+     {
+      "stream": "d0/rgb.front",
+      "phase": "neck",
+      "frames": [
+       2,
+       22
+      ]
+     },
+     {
+      "stream": "d0/stills",
+      "frames": [
+       2
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "per-phase-indices-restart",
+   "seed": 20261002,
+   "stride": 10,
+   "stills_stride": 8,
+   "streams": [
+    {
+     "stream": "d0/rgb.front",
+     "rows": [
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      },
+      {
+       "phase": "neck"
+      }
+     ]
+    },
+    {
+     "stream": "d0/depth.front",
+     "rows": [
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "setup"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      }
+     ]
+    }
+   ],
+   "expected": {
+    "version": 1,
+    "method": "seeded-stride",
+    "seed": 20261002,
+    "stride": 10,
+    "stills_stride": 8,
+    "holdout": [
+     {
+      "stream": "d0/rgb.front",
+      "phase": "setup",
+      "frames": [
+       2,
+       12
+      ]
+     },
+     {
+      "stream": "d0/rgb.front",
+      "phase": "orbit",
+      "frames": [
+       2
+      ]
+     },
+     {
+      "stream": "d0/rgb.front",
+      "phase": "neck",
+      "frames": [
+       2,
+       12,
+       22
+      ]
+     },
+     {
+      "stream": "d0/depth.front",
+      "phase": "setup",
+      "frames": [
+       2
+      ]
+     },
+     {
+      "stream": "d0/depth.front",
+      "phase": "orbit",
+      "frames": []
+     }
+    ]
+   }
+  },
+  {
+   "name": "other-seed-offsets",
+   "seed": 20261009,
+   "stride": 10,
+   "stills_stride": 8,
+   "streams": [
+    {
+     "stream": "d0/rgb.front",
+     "rows": [
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      },
+      {
+       "phase": "orbit"
+      }
+     ]
+    },
+    {
+     "stream": "d0/stills",
+     "rows": [
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      }
+     ]
+    }
+   ],
+   "expected": {
+    "version": 1,
+    "method": "seeded-stride",
+    "seed": 20261009,
+    "stride": 10,
+    "stills_stride": 8,
+    "holdout": [
+     {
+      "stream": "d0/rgb.front",
+      "phase": "orbit",
+      "frames": [
+       9,
+       19
+      ]
+     },
+     {
+      "stream": "d0/stills",
+      "frames": [
+       1,
+       9
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "seed-multiple-of-stride",
+   "seed": 20261000,
+   "stride": 10,
+   "stills_stride": 8,
+   "streams": [
+    {
+     "stream": "d0/depth.front",
+     "rows": [
+      {
+       "phase": "plate"
+      },
+      {
+       "phase": "plate"
+      },
+      {
+       "phase": "plate"
+      },
+      {
+       "phase": "plate"
+      },
+      {
+       "phase": "plate"
+      },
+      {
+       "phase": "plate"
+      },
+      {
+       "phase": "plate"
+      },
+      {
+       "phase": "plate"
+      },
+      {
+       "phase": "plate"
+      },
+      {
+       "phase": "plate"
+      },
+      {
+       "phase": "plate"
+      }
+     ]
+    },
+    {
+     "stream": "d0/stills",
+     "rows": [
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      },
+      {
+       "phase": "face"
+      }
+     ]
+    }
+   ],
+   "expected": {
+    "version": 1,
+    "method": "seeded-stride",
+    "seed": 20261000,
+    "stride": 10,
+    "stills_stride": 8,
+    "holdout": [
+     {
+      "stream": "d0/depth.front",
+      "phase": "plate",
+      "frames": [
+       0,
+       10
+      ]
+     },
+     {
+      "stream": "d0/stills",
+      "frames": [
+       0,
+       8
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "empty-stream-omitted",
+   "seed": 20261002,
+   "stride": 10,
+   "stills_stride": 8,
+   "streams": [
+    {
+     "stream": "d0/rgb.front",
+     "rows": []
+    },
+    {
+     "stream": "d0/tracking.arkit",
+     "rows": [
+      {
+       "phase": "speech"
+      },
+      {
+       "phase": "speech"
+      },
+      {
+       "phase": "speech"
+      }
+     ]
+    }
+   ],
+   "expected": {
+    "version": 1,
+    "method": "seeded-stride",
+    "seed": 20261002,
+    "stride": 10,
+    "stills_stride": 8,
+    "holdout": [
+     {
+      "stream": "d0/tracking.arkit",
+      "phase": "speech",
+      "frames": [
+       2
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

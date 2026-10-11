@@ -1,0 +1,347 @@
+{
+ "rule": "The Vision-to-contract mapping takes VNFaceObservation angles (radians) to contract Euler degrees in the display-upright head frame. `orientation` is the EXIF orientation handed to VNImageRequestHandler, i.e. the stored stream's orientation, so Vision measured the upright (un-mirrored) image; the mapping is therefore a unit conversion plus range normalisation for every orientation.",
+ "contract": "spec/frames-and-units.md \u00a73",
+ "assumed_vision_convention": "Vision angles are right-hand rotations about the axes of its upright image frame (x right, y up, z out of the image toward the viewer), composed as Ry(yaw) . Rx(pitch) . Rz(roll), with the face looking at the camera = 0. Authored from Apple's documented image-space convention (lower-left origin, y up); NOT yet verified on a device (`verified_on_device: false`). A confirmed sign flip is a change to these vectors.",
+ "algorithm": "contract = euler(Ry.Rx.Rz(vision)) (degrees; yaw, roll wrapped to [-180,180)). The stored pose of the same head is orientation-dependent: see upright_euler.json.",
+ "orientations": {
+  "1": [
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ]
+  ],
+  "2": [
+   [
+    -1,
+    0
+   ],
+   [
+    0,
+    1
+   ]
+  ],
+  "3": [
+   [
+    -1,
+    0
+   ],
+   [
+    0,
+    -1
+   ]
+  ],
+  "4": [
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    -1
+   ]
+  ],
+  "5": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "6": [
+   [
+    0,
+    -1
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "7": [
+   [
+    0,
+    -1
+   ],
+   [
+    -1,
+    0
+   ]
+  ],
+  "8": [
+   [
+    0,
+    1
+   ],
+   [
+    -1,
+    0
+   ]
+  ]
+ },
+ "orientations_note": "A maps a direction in the stored image's pixel axes (u right, v down) to the upright (displayed) image's pixel axes. EXIF 6 = rotate 90 CW to display.",
+ "tolerance_deg": 1e-07,
+ "cases": [
+  {
+   "orientation": 1,
+   "vision_rad": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "upright stored frame: identity",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 1,
+   "vision_rad": {
+    "yaw": 0.5235987755982988,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "expected_deg": {
+    "yaw": 30.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "Vision +yaw (right-hand about image +y, z toward viewer) = nose to viewer's right",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 1,
+   "vision_rad": {
+    "yaw": 0.0,
+    "pitch": 0.3490658503988659,
+    "roll": 0.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 20.0,
+    "roll": 0.0
+   },
+   "why": "Vision +pitch (right-hand about image +x) = chin down",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 1,
+   "vision_rad": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.2617993877991494
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 15.0
+   },
+   "why": "Vision +roll (counter-clockwise in the y-up image) = viewer's-right side rises",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 1,
+   "vision_rad": {
+    "yaw": -0.6981317007977318,
+    "pitch": 0.17453292519943295,
+    "roll": -0.08726646259971647
+   },
+   "expected_deg": {
+    "yaw": -40.0,
+    "pitch": 10.0,
+    "roll": -5.0
+   },
+   "why": "combined",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 6,
+   "vision_rad": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "front stream (sensor-native portrait, EXIF 6): an upright head is 0, not roll 90",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 6,
+   "vision_rad": {
+    "yaw": 0.5235987755982988,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "expected_deg": {
+    "yaw": 30.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "display yaw stays yaw (in the stored frame it would be a chin-up)",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 6,
+   "vision_rad": {
+    "yaw": 0.0,
+    "pitch": 0.3490658503988659,
+    "roll": 0.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 20.0,
+    "roll": 0.0
+   },
+   "why": "display chin-down stays pitch",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 6,
+   "vision_rad": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.17453292519943295
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 10.0
+   },
+   "why": "rolls are display rolls",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 8,
+   "vision_rad": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "stored frame must turn 90 CCW to be upright",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 3,
+   "vision_rad": {
+    "yaw": 0.5235987755982988,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "expected_deg": {
+    "yaw": 30.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "upside-down stored frame",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 2,
+   "vision_rad": {
+    "yaw": 0.5235987755982988,
+    "pitch": 0.17453292519943295,
+    "roll": 0.08726646259971647
+   },
+   "expected_deg": {
+    "yaw": 30.0,
+    "pitch": 10.0,
+    "roll": 5.0
+   },
+   "why": "mirrored stream: Vision saw the un-mirrored upright image",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 4,
+   "vision_rad": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "vertical mirror",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 5,
+   "vision_rad": {
+    "yaw": -0.3490658503988659,
+    "pitch": 0.08726646259971647,
+    "roll": 0.0
+   },
+   "expected_deg": {
+    "yaw": -20.0,
+    "pitch": 5.0,
+    "roll": 0.0
+   },
+   "why": "transpose",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 7,
+   "vision_rad": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": -0.4363323129985824
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": -25.0
+   },
+   "why": "transverse",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 1,
+   "vision_rad": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 3.141592653589793
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": -180.0
+   },
+   "why": "roll 180 normalises to -180 (range [-180, 180))",
+   "verified_on_device": false
+  },
+  {
+   "orientation": 6,
+   "vision_rad": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": -1.7453292519943295
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": -100.0
+   },
+   "why": "roll beyond 90 is kept (head past sideways)",
+   "verified_on_device": false
+  }
+ ]
+}

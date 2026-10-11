@@ -1,0 +1,133 @@
+{
+ "rule": "u = fx x/z + cx, v = fy y/z + cy; pixel (i,j) centre at (i+0.5, j+0.5). Back-projection z = depth (or 1/disparity), x = (u-cx) z/fx, y = (v-cy) z/fy. Non-finite or non-positive z is a hole (null). Scaling: fx' = fx w'/w, cx' = cx w'/w, same for y.",
+ "contract": "spec/frames-and-units.md \u00a74",
+ "tolerance": 1e-12,
+ "K": {
+  "fx": 1400.0,
+  "fy": 1410.0,
+  "cx": 960.5,
+  "cy": 720.25,
+  "width": 1920,
+  "height": 1440
+ },
+ "cases": [
+  {
+   "name": "principal point",
+   "u": 960.5,
+   "v": 720.25,
+   "depth": 0.5,
+   "expected": [
+    0.0,
+    0.0,
+    0.5
+   ]
+  },
+  {
+   "name": "pixel (0,0) centre is (0.5,0.5)",
+   "pixel": [
+    0,
+    0
+   ],
+   "u": 0.5,
+   "v": 0.5,
+   "depth": 0.4,
+   "expected": [
+    -0.274285714285714,
+    -0.204184397163121,
+    0.4
+   ]
+  },
+  {
+   "name": "right and below",
+   "u": 1500.0,
+   "v": 1000.0,
+   "depth": 0.35,
+   "expected": [
+    0.134875,
+    0.069441489361702,
+    0.35
+   ]
+  },
+  {
+   "name": "disparity 2.5 /m -> z 0.4",
+   "u": 400.0,
+   "v": 300.0,
+   "disparity": 2.5,
+   "expected": [
+    -0.160142857142857,
+    -0.119219858156028,
+    0.4
+   ]
+  },
+  {
+   "name": "hole (NaN depth, JSON null)",
+   "u": 10.0,
+   "v": 10.0,
+   "depth": null,
+   "expected": null
+  },
+  {
+   "name": "zero depth is a hole",
+   "u": 10.0,
+   "v": 10.0,
+   "depth": 0.0,
+   "expected": null
+  },
+  {
+   "name": "negative depth is a hole",
+   "u": 10.0,
+   "v": 10.0,
+   "depth": -0.2,
+   "expected": null
+  },
+  {
+   "name": "zero disparity is a hole",
+   "u": 10.0,
+   "v": 10.0,
+   "disparity": 0.0,
+   "expected": null
+  }
+ ],
+ "project": [
+  {
+   "point": [
+    0.1,
+    -0.05,
+    0.5
+   ],
+   "expected_uv": [
+    1240.5,
+    579.25
+   ]
+  },
+  {
+   "point": [
+    0.0,
+    0.0,
+    -0.5
+   ],
+   "expected_uv": null,
+   "note": "behind the camera"
+  }
+ ],
+ "scale": {
+  "from": {
+   "fx": 1400.0,
+   "fy": 1410.0,
+   "cx": 960.5,
+   "cy": 720.25,
+   "width": 1920,
+   "height": 1440
+  },
+  "to_width": 640,
+  "to_height": 480,
+  "expected": {
+   "fx": 466.6666666666667,
+   "fy": 470.0,
+   "cx": 320.1666666666667,
+   "cy": 240.08333333333334,
+   "width": 640,
+   "height": 480
+  }
+ }
+}

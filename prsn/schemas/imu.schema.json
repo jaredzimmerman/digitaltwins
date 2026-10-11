@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/imu.schema.json",
+  "title": ".prsncap motion/imu.json",
+  "description": "Describes motion/imu.bin, whose 80-byte record layout is fixed in spec/prsncap.md section 3.1.",
+  "type": "object",
+  "required": ["version", "record_bytes", "endian", "frame", "kinds"],
+  "properties": {
+    "version": {"const": 1},
+    "record_bytes": {"const": 80},
+    "endian": {"const": "little"},
+    "frame": {"const": "cm-device"},
+    "attitude_reference": {"type": "string"},
+    "kinds": {
+      "type": "array",
+      "items": {"enum": ["device_motion", "gyro", "accel", "mag", "altimeter"]},
+      "uniqueItems": true
+    },
+    "requested_hz": {"type": "object", "additionalProperties": {"type": "number", "exclusiveMinimum": 0}},
+    "counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "first_pts_ns": {"type": "integer"},
+    "last_pts_ns": {"type": "integer"}
+  },
+  "additionalProperties": true
+}

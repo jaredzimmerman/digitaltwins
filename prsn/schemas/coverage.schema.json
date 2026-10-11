@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/coverage.schema.json",
+  "title": "org.prsn.face.coverage payload",
+  "description": "What has been captured for one look: regions by angle bin, expressions, phonemes, lighting, and the gaps that drive rescan suggestions (spec/enrichment-model.md section 6).",
+  "type": "object",
+  "required": ["look", "regions"],
+  "properties": {
+    "look": {"type": "string", "minLength": 1},
+    "regions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "bins": {
+            "type": "object",
+            "propertyNames": {"pattern": "^yaw:(\\d|1\\d|2[0-3])\\|pitch:(\\d|1[01])$"},
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "views": {"type": "integer", "minimum": 0},
+                "sharp": {"type": "number", "minimum": 0, "maximum": 1},
+                "best_px_per_mm": {"type": "number", "minimum": 0}
+              },
+              "additionalProperties": true
+            }
+          },
+          "fraction": {"type": "number", "minimum": 0, "maximum": 1}
+        },
+        "additionalProperties": true
+      }
+    },
+    "expressions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {"peak": {"type": "number", "minimum": 0, "maximum": 1}, "frames": {"type": "integer", "minimum": 0}},
+        "additionalProperties": true
+      }
+    },
+    "phonemes": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "lighting": {
+      "type": "object",
+      "properties": {
+        "sessions": {"type": "integer", "minimum": 0},
+        "distinct_environments": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": true
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind"],
+        "properties": {
+          "kind": {"type": "string", "description": "What is missing, e.g. `region` or `expression`."},
+          "region": {"type": "string"},
+          "names": {"type": "array", "items": {"type": "string"}},
+          "severity": {"type": "number", "minimum": 0, "maximum": 1},
+          "suggest": {"type": "string", "description": "A capture script kind or phase id to fill the gap."}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

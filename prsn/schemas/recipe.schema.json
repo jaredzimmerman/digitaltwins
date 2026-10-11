@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/recipe.schema.json",
+  "title": "Recipe descriptor",
+  "description": "One recipe of a recipe registry, stored as `<family-short>/<id>@<version>.json` (spec/derivation-recipes.md section 2). Other fields (for example how an application runs the recipe) are allowed.",
+  "type": "object",
+  "required": ["id", "version", "family", "rank", "produces", "requires", "needs", "determinism", "eval"],
+  "properties": {
+    "id": {"$ref": "defs.schema.json#/$defs/recordType"},
+    "version": {"$ref": "defs.schema.json#/$defs/semver"},
+    "family": {"$ref": "defs.schema.json#/$defs/recordType"},
+    "rank": {"type": "integer", "minimum": 0},
+    "produces": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {"$ref": "defs.schema.json#/$defs/recordType"},
+        "path_template": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "requires": {
+      "type": "object",
+      "properties": {
+        "all": {"type": "array", "items": {"$ref": "#/$defs/capabilityPattern"}},
+        "any": {"type": "array", "items": {"$ref": "#/$defs/capabilityPattern"}},
+        "min_captures": {"type": "integer", "minimum": 1},
+        "mode": {"const": "any-capture"}
+      },
+      "additionalProperties": true
+    },
+    "needs": {
+      "type": "object",
+      "required": ["compute"],
+      "properties": {
+        "compute": {"enum": ["cpu", "metal", "mlx", "mps", "cuda"]},
+        "ram_gb": {"type": "number", "minimum": 0},
+        "disk_gb": {"type": "number", "minimum": 0},
+        "est_minutes": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": true
+    },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key", "sha256", "license"],
+        "properties": {
+          "role": {"type": "string"},
+          "key": {"type": "string", "minLength": 1},
+          "sha256": {"$ref": "defs.schema.json#/$defs/sha256Hex"},
+          "license": {"$ref": "defs.schema.json#/$defs/license"},
+          "source": {"type": "string"},
+          "use_restrictions": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    },
+    "deps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["family", "role"],
+        "properties": {
+          "family": {"$ref": "defs.schema.json#/$defs/recordType"},
+          "role": {"type": "string", "minLength": 1},
+          "min_rank": {"type": "integer", "minimum": 0}
+        },
+        "additionalProperties": true
+      }
+    },
+    "params_schema": {"type": "object"},
+    "params_default": {"type": "object"},
+    "determinism": {"enum": ["bitwise", "seeded-nonbitwise", "none"]},
+    "eval": {
+      "type": "object",
+      "required": ["metric"],
+      "properties": {
+        "metric": {"$ref": "#/$defs/metric"},
+        "higher_is_better": {"type": "boolean"},
+        "min_improvement": {"type": "number", "minimum": 0},
+        "no_regression_per_capture": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": true
+    },
+    "license_constraints": {"type": "array", "items": {"type": "string"}},
+    "local_infeasible_reason": {"type": "string"},
+    "return_local_trigger": {"type": "string"}
+  },
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {"properties": {"needs": {"properties": {"compute": {"const": "cuda"}}, "required": ["compute"]}}, "required": ["needs"]},
+      "then": {
+        "required": ["local_infeasible_reason", "return_local_trigger"],
+        "properties": {
+          "local_infeasible_reason": {"minLength": 1},
+          "return_local_trigger": {"minLength": 1}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "metric": {"enum": ["psnr", "lpips", "ssim", "p2p-mm", "landmark-px", "coverage-fraction", "auraface-sim", "none"]},
+    "capabilityPattern": {
+      "description": "A capability tag; `*` is a wildcard and a trailing `?` marks the tag optional.",
+      "type": "string",
+      "pattern": "^[a-z0-9*][a-z0-9.*_-]*\\??$"
+    }
+  }
+}

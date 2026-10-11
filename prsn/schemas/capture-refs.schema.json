@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/capture-refs.schema.json",
+  "title": "org.prsn.face.capture-ref payload",
+  "description": "The captures a .prsn was derived from. A list (spec 1.1); a single object is still accepted and read as a one-item list.",
+  "oneOf": [
+    {"type": "array", "items": {"$ref": "#/$defs/ref"}},
+    {"$ref": "#/$defs/ref"}
+  ],
+  "$defs": {
+    "ref": {
+      "type": "object",
+      "required": ["manifest_sha256"],
+      "properties": {
+        "file": {"type": "string", "pattern": "\\.prsncap$"},
+        "manifest_sha256": {"$ref": "defs.schema.json#/$defs/sha256OrContentId"},
+        "tier": {"enum": ["archival", "standard", "minimal"]},
+        "capabilities": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "look": {"$ref": "defs.schema.json#/$defs/lookRef"},
+        "era": {"type": "string", "minLength": 1},
+        "captured_at": {"$ref": "defs.schema.json#/$defs/dateTime"},
+        "script": {"$ref": "session.schema.json#/$defs/scriptRef"}
+      },
+      "additionalProperties": true
+    }
+  }
+}

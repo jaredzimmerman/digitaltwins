@@ -1,0 +1,129 @@
+{
+ "version": 1,
+ "spec": "spec/prsn.md, Provenance tiers",
+ "description": "Tier downgrade for a file whose signer the reader does not trust: `enrolled` and `professional` origins become `imported` with the claimed tier kept as `origin.was`, and a template's `evidence` seconds for those tiers move to `imported` (rounded to 0.1). A trusted file is unchanged.",
+ "cases": [
+  {
+   "name": "untrusted-enrolled-sample",
+   "trusted": false,
+   "entries": [
+    {
+     "path": "voice/samples/s-0001.flac",
+     "origin": {
+      "tier": "enrolled",
+      "how": "example-guided-v1"
+     }
+    }
+   ],
+   "expected": [
+    {
+     "path": "voice/samples/s-0001.flac",
+     "origin": {
+      "tier": "imported",
+      "how": "example-guided-v1",
+      "was": "enrolled"
+     }
+    }
+   ]
+  },
+  {
+   "name": "untrusted-professional-sample",
+   "trusted": false,
+   "entries": [
+    {
+     "path": "voice/samples/s-0002.flac",
+     "origin": {
+      "tier": "professional",
+      "set_by": "user"
+     }
+    }
+   ],
+   "expected": [
+    {
+     "path": "voice/samples/s-0002.flac",
+     "origin": {
+      "tier": "imported",
+      "set_by": "user",
+      "was": "professional"
+     }
+    }
+   ]
+  },
+  {
+   "name": "untrusted-lower-tiers-unchanged",
+   "trusted": false,
+   "entries": [
+    {
+     "path": "voice/samples/s-0003.flac",
+     "origin": {
+      "tier": "observed"
+     }
+    },
+    {
+     "path": "voice/samples/s-0004.flac",
+     "origin": {
+      "tier": "imported"
+     }
+    }
+   ],
+   "expected": [
+    {
+     "path": "voice/samples/s-0003.flac",
+     "origin": {
+      "tier": "observed"
+     }
+    },
+    {
+     "path": "voice/samples/s-0004.flac",
+     "origin": {
+      "tier": "imported"
+     }
+    }
+   ]
+  },
+  {
+   "name": "untrusted-template-evidence",
+   "trusted": false,
+   "entries": [
+    {
+     "path": "voice/templates/example-embedder-192.bir",
+     "evidence": {
+      "enrolled": 30.0,
+      "professional": 12.2,
+      "imported": 2.0,
+      "observed": 5.0
+     }
+    }
+   ],
+   "expected": [
+    {
+     "path": "voice/templates/example-embedder-192.bir",
+     "evidence": {
+      "imported": 44.2,
+      "observed": 5.0
+     }
+    }
+   ]
+  },
+  {
+   "name": "trusted-file-unchanged",
+   "trusted": true,
+   "entries": [
+    {
+     "path": "voice/samples/s-0001.flac",
+     "origin": {
+      "tier": "enrolled"
+     }
+    }
+   ],
+   "expected": [
+    {
+     "path": "voice/samples/s-0001.flac",
+     "origin": {
+      "tier": "enrolled"
+     }
+    }
+   ]
+  }
+ ]
+}

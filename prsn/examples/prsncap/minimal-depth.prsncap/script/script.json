@@ -1,0 +1,1 @@
+{"id":"example-depth-minimal","kind":"full","phases":[{"id":"setup","mode":"avf","steps":[]},{"id":"orbit","mode":"avf","steps":[]},{"id":"expr","mode":"arkit","steps":[]}],"version":"1.0.0"}

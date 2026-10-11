@@ -1,0 +1,776 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/prsn-entry.schema.json",
+  "title": ".prsn manifest entry",
+  "description": "One row of manifest.entries (spec/prsn.md, Fields common to all entries). Record-specific fields are open: readers keep fields they do not know.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/$defs/container"
+    },
+    {
+      "$ref": "#/$defs/depthRule"
+    },
+    {
+      "$ref": "#/$defs/originRule"
+    },
+    {
+      "$ref": "#/$defs/notGeneratedRule"
+    },
+    {
+      "$ref": "#/$defs/generationRule"
+    },
+    {
+      "$ref": "#/$defs/typeRules"
+    }
+  ],
+  "$defs": {
+    "container": {
+      "type": "object",
+      "required": [
+        "path",
+        "type",
+        "media",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "defs.schema.json#/$defs/entryPath"
+        },
+        "type": {
+          "$ref": "defs.schema.json#/$defs/recordType"
+        },
+        "media": {
+          "type": "string",
+          "pattern": "^[a-z0-9!#$&^_.+-]+/[a-z0-9!#$&^_.+-]+$"
+        },
+        "sha256": {
+          "$ref": "defs.schema.json#/$defs/sha256Hex"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "critical": {
+          "type": "boolean"
+        },
+        "origin": {
+          "$ref": "defs.schema.json#/$defs/origin"
+        },
+        "quality": {
+          "$ref": "defs.schema.json#/$defs/quality"
+        },
+        "model": {
+          "$ref": "defs.schema.json#/$defs/modelRef"
+        },
+        "license": {
+          "$ref": "defs.schema.json#/$defs/license"
+        },
+        "coverage": {
+          "type": "array",
+          "items": {
+            "$ref": "defs.schema.json#/$defs/coverageRegion"
+          },
+          "uniqueItems": true
+        },
+        "synthetic_capable": {
+          "type": "boolean"
+        },
+        "expires": {
+          "$ref": "defs.schema.json#/$defs/date"
+        },
+        "enc": {
+          "$ref": "defs.schema.json#/$defs/enc"
+        },
+        "protected": {
+          "$ref": "defs.schema.json#/$defs/protected"
+        },
+        "derivation": {
+          "$ref": "derivation.schema.json"
+        },
+        "look": {
+          "$ref": "defs.schema.json#/$defs/lookRef"
+        },
+        "era": {
+          "type": "string",
+          "minLength": 1
+        },
+        "frame": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pose": {
+          "$ref": "defs.schema.json#/$defs/pose"
+        },
+        "source_format": {
+          "type": "string",
+          "pattern": "^[suf](8|16|24|32|64)$",
+          "description": "The source sample format of audio, e.g. `s16`, `s24`, `f32` (s = signed integer, u = unsigned, f = float)."
+        }
+      },
+      "additionalProperties": true
+    },
+    "depthRule": {
+      "description": "Entry depth: `person.json` (and only it) at depth 1; at depth 2 only modality-level index records `<modality>/<name>.json` (capture references, coverage records); every other entry `<modality>/<role>/<name>` or deeper.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "path": {
+                "pattern": "^[^/]+$"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "pattern": "^(org\\.prsn|org\\.museli)\\.person$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "path": {
+                "pattern": "^[^/]+/[^/]+$"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          },
+          "then": {
+            "properties": {
+              "path": {
+                "pattern": "\\.json$"
+              },
+              "type": {
+                "pattern": "^(org\\.prsn|org\\.museli)\\.[a-z0-9-]+\\.(capture-ref|coverage)$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "originRule": {
+      "description": "samples/ and training/ entries carry `origin` at every spec revision.",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/(samples|training)/"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "required": [
+          "origin"
+        ]
+      }
+    },
+    "notGeneratedRule": {
+      "description": "Generated output never goes into samples/ or training/: such an entry's origin is never marked `synthetic`.",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/(samples|training)/"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "properties": {
+          "origin": {
+            "not": {
+              "required": [
+                "synthetic"
+              ],
+              "properties": {
+                "synthetic": {
+                  "const": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "generationRule": {
+      "description": "Every generation/ entry carries `synthetic_capable: true`.",
+      "if": {
+        "properties": {
+          "path": {
+            "pattern": "^[a-z0-9._-]+/generation/"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      },
+      "then": {
+        "required": [
+          "synthetic_capable"
+        ],
+        "properties": {
+          "synthetic_capable": {
+            "const": true
+          }
+        }
+      }
+    },
+    "typeRules": {
+      "description": "MUST fields per record type (spec/prsn.md and spec/voice.md tables, MUST column). SHOULD fields are not enforced.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "org.prsn.face.mesh",
+                  "org.prsn.body.mesh"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "topology",
+              "coverage",
+              "model"
+            ],
+            "properties": {
+              "model": {
+                "required": [
+                  "license"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.face.landmarks"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "topology"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.face.params"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "model",
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "identity",
+                  "track"
+                ]
+              },
+              "model": {
+                "required": [
+                  "license"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.body.params"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "model",
+              "coverage"
+            ],
+            "properties": {
+              "model": {
+                "required": [
+                  "license"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.face.expression-track"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "basis"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.face.expression-map"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "from",
+              "to",
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "generic-linear",
+                  "per-user-linear",
+                  "per-user-mlp"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.face.splat"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "sh_degree",
+              "kernel",
+              "color_space",
+              "coverage"
+            ],
+            "properties": {
+              "critical": {
+                "const": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.face.coverage"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "look",
+              "derivation"
+            ],
+            "properties": {
+              "critical": {
+                "const": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.face.avatar"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "topology",
+              "driver",
+              "binding",
+              "formulation",
+              "coverage"
+            ],
+            "properties": {
+              "formulation": {
+                "enum": [
+                  "lbs-bound",
+                  "gaussian-blendshapes"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.image.lora"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "base_model",
+              "trigger"
+            ],
+            "properties": {
+              "base_model": {
+                "type": "object",
+                "required": [
+                  "key",
+                  "sha256"
+                ],
+                "properties": {
+                  "key": {
+                    "type": "string"
+                  },
+                  "sha256": {
+                    "$ref": "defs.schema.json#/$defs/sha256Hex"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.image.embedding"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "base_model",
+              "token"
+            ],
+            "properties": {
+              "base_model": {
+                "type": "object",
+                "required": [
+                  "key",
+                  "sha256"
+                ],
+                "properties": {
+                  "key": {
+                    "type": "string"
+                  },
+                  "sha256": {
+                    "$ref": "defs.schema.json#/$defs/sha256Hex"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.image.faceid"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "template"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.avatar.vrm"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "coverage"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "org.prsn.face.template",
+                  "org.prsn.voice.template"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "model"
+            ],
+            "properties": {
+              "model": {
+                "required": [
+                  "license",
+                  "dim"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.voice.sample"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "seconds",
+              "sample_rate",
+              "bits"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.voice.seed"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "text",
+              "sample_rate",
+              "bits"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "org.prsn.voice.prompt"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "engine"
+            ],
+            "properties": {
+              "engine": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "version"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "org.prsn.voice.lora",
+                  "org.prsn.voice.rvc"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "base_model"
+            ],
+            "properties": {
+              "base_model": {
+                "type": "object",
+                "required": [
+                  "key",
+                  "sha256"
+                ],
+                "properties": {
+                  "key": {
+                    "type": "string"
+                  },
+                  "sha256": {
+                    "$ref": "defs.schema.json#/$defs/sha256Hex"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "Audio stored as integer FLAC from a floating-point capture records its source format.",
+          "if": {
+            "required": [
+              "captured"
+            ],
+            "properties": {
+              "captured": {
+                "required": [
+                  "float"
+                ],
+                "properties": {
+                  "float": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "source_format"
+            ]
+          }
+        }
+      ]
+    },
+    "v11Fields": {
+      "description": "Required when manifest.spec >= 1.1: `derivation` on geometry/, generation/, templates/; `look` and `era` on samples/, geometry/, generation/; `frame` on geometry/ and generation/ of spatial modalities (face, head, body).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "path": {
+                "pattern": "^[a-z0-9._-]+/(geometry|generation|templates)/"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          },
+          "then": {
+            "required": [
+              "derivation"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "path": {
+                "pattern": "^[a-z0-9._-]+/(samples|geometry|generation)/"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          },
+          "then": {
+            "required": [
+              "look",
+              "era"
+            ]
+          }
+        },
+        {
+          "description": "`frame` is required only for spatial modalities (face, head, body); non-spatial modalities such as voice omit it.",
+          "if": {
+            "properties": {
+              "path": {
+                "pattern": "^(face|head|body)/(geometry|generation)/"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          },
+          "then": {
+            "required": [
+              "frame"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

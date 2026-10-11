@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/derivation.schema.json",
+  "title": "derivation block",
+  "description": "How a derived entry or cache item was made (spec/derivation-recipes.md section 1).",
+  "type": "object",
+  "required": [
+    "family",
+    "recipe",
+    "action_key",
+    "determinism"
+  ],
+  "properties": {
+    "family": {
+      "$ref": "defs.schema.json#/$defs/recordType"
+    },
+    "recipe": {
+      "type": "object",
+      "required": [
+        "id",
+        "version"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "defs.schema.json#/$defs/recordType"
+        },
+        "version": {
+          "$ref": "defs.schema.json#/$defs/semver"
+        },
+        "rank": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "tool": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "build": {
+          "type": "string"
+        },
+        "platform": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "sha256"
+        ],
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "sha256": {
+            "$ref": "defs.schema.json#/$defs/sha256Hex"
+          },
+          "license": {
+            "$ref": "defs.schema.json#/$defs/license"
+          },
+          "use_restrictions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/input"
+      }
+    },
+    "params": {
+      "type": "object"
+    },
+    "action_key": {
+      "$ref": "defs.schema.json#/$defs/contentId"
+    },
+    "determinism": {
+      "enum": [
+        "bitwise",
+        "seeded-nonbitwise",
+        "none"
+      ]
+    },
+    "eval": {
+      "type": "object",
+      "properties": {
+        "split": {
+          "const": "holdout"
+        },
+        "metric": {
+          "$ref": "recipe.schema.json#/$defs/metric"
+        },
+        "value": {
+          "type": "number"
+        },
+        "extra": {
+          "type": "object"
+        },
+        "per_capture": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "capture",
+              "value"
+            ],
+            "properties": {
+              "capture": {
+                "$ref": "defs.schema.json#/$defs/contentId"
+              },
+              "value": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "supersedes": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "defs.schema.json#/$defs/sha256OrContentId"
+        }
+      ]
+    },
+    "created": {
+      "$ref": "defs.schema.json#/$defs/dateTime"
+    },
+    "duration_s": {
+      "type": "number",
+      "minimum": 0
+    },
+    "license_constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "select": {
+      "type": "object",
+      "properties": {
+        "streams": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "phases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude_split": {
+          "const": "holdout"
+        }
+      },
+      "additionalProperties": true
+    },
+    "input": {
+      "description": "Exactly one content hash: a capture (manifest content id), a cache item (action_key) or a .prsn entry (sha256).",
+      "type": "object",
+      "oneOf": [
+        {
+          "required": [
+            "capture"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "cache"
+                ]
+              },
+              {
+                "required": [
+                  "sha256"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "required": [
+            "cache"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "capture"
+                ]
+              },
+              {
+                "required": [
+                  "sha256"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "required": [
+            "sha256"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "capture"
+                ]
+              },
+              {
+                "required": [
+                  "cache"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "capture": {
+          "$ref": "defs.schema.json#/$defs/contentId"
+        },
+        "cache": {
+          "$ref": "defs.schema.json#/$defs/contentId"
+        },
+        "sha256": {
+          "$ref": "defs.schema.json#/$defs/sha256Hex"
+        },
+        "entry": {
+          "$ref": "defs.schema.json#/$defs/entryPath"
+        },
+        "role": {
+          "type": "string"
+        },
+        "look": {
+          "$ref": "defs.schema.json#/$defs/lookRef"
+        },
+        "era": {
+          "type": "string"
+        },
+        "select": {
+          "$ref": "#/$defs/select"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

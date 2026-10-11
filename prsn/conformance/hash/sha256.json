@@ -1,0 +1,80 @@
+{
+ "description": "SHA-256 vectors. Input is `input_utf8` (UTF-8 bytes) or `generator`: kind=repeat -> `length` copies of `byte`; kind=affine -> byte[i] = (i*mul + add) & 0xff. Implementations hash in one shot AND in uneven streaming chunks; both must equal `sha256` (lowercase hex). Content ids are written `sha256:<hex>`.",
+ "version": 1,
+ "vectors": [
+  {
+   "name": "empty",
+   "input_utf8": "",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+   "name": "abc",
+   "input_utf8": "abc",
+   "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+  },
+  {
+   "name": "nist_448_bit",
+   "input_utf8": "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
+   "sha256": "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
+  },
+  {
+   "name": "nist_896_bit",
+   "input_utf8": "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu",
+   "sha256": "cf5b16a778af8380036ce59e7b0492370b249b11e8f07a51afac45037afee9d1"
+  },
+  {
+   "name": "utf8_text",
+   "input_utf8": "Zo\u00eb \u4e2d \ud83d\ude00\n",
+   "sha256": "fc9f10f1a608f66cfe91f3c250e846e7a81d108fb031a3929f0560d189003f32"
+  },
+  {
+   "name": "one_million_a",
+   "generator": {
+    "kind": "repeat",
+    "byte": 97,
+    "length": 1000000
+   },
+   "sha256": "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0"
+  },
+  {
+   "name": "block_minus_one",
+   "generator": {
+    "kind": "affine",
+    "mul": 1,
+    "add": 0,
+    "length": 63
+   },
+   "sha256": "29af2686fd53374a36b0846694cc342177e428d1647515f078784d69cdb9e488"
+  },
+  {
+   "name": "block_exact",
+   "generator": {
+    "kind": "affine",
+    "mul": 1,
+    "add": 0,
+    "length": 64
+   },
+   "sha256": "fdeab9acf3710362bd2658cdc9a29e8f9c757fcf9811603a8c447cd1d9151108"
+  },
+  {
+   "name": "block_plus_one",
+   "generator": {
+    "kind": "affine",
+    "mul": 1,
+    "add": 0,
+    "length": 65
+   },
+   "sha256": "4bfd2c8b6f1eec7a2afeb48b934ee4b2694182027e6d0fc075074f2fabb31781"
+  },
+  {
+   "name": "crosses_1mib_chunks",
+   "generator": {
+    "kind": "affine",
+    "mul": 31,
+    "add": 7,
+    "length": 3145745
+   },
+   "sha256": "27f3f0120d4a72b66e7b58152c631644bd689231ebd4487469b59226f1be13af"
+  }
+ ]
+}

@@ -1,0 +1,1 @@
+[{"capabilities":["depth.truedepth.30","tracking.arkit-face"],"captured_at":"2026-10-02T18:04:11Z","era":"era-1","file":"example-20261002T1804Z.prsncap","look":"look-a","manifest_sha256":"not-a-hash","script":{"id":"example-guided","kind":"full","version":"1.0.0"},"tier":"minimal"}]

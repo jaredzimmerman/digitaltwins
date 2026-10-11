@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/era.schema.json",
+  "title": "manifest.eras[] item",
+  "description": "A period within which identity pools. Eras are linked by `linked_from`.",
+  "type": "object",
+  "required": ["id", "looks"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "label": {"type": "string"},
+    "looks": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "identity_ref": {"oneOf": [{"type": "null"}, {"$ref": "defs.schema.json#/$defs/entryPath"}]},
+    "started": {"oneOf": [{"type": "null"}, {"$ref": "defs.schema.json#/$defs/date"}]},
+    "ended": {"oneOf": [{"type": "null"}, {"$ref": "defs.schema.json#/$defs/date"}]},
+    "linked_from": {"oneOf": [{"type": "null"}, {"type": "string", "minLength": 1}]}
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,54 @@
+{
+ "version": 1,
+ "spec": "spec/prsn.md, Container",
+ "cases": [
+  {
+   "file": "valid.prsn",
+   "rule": null,
+   "outcome": "valid",
+   "why": "examples/prsn/valid-v11 in ZIP form"
+  },
+  {
+   "file": "legacy-mimetype.prsn",
+   "rule": null,
+   "outcome": "valid",
+   "why": "the legacy v1 mimetype; readers SHOULD accept it"
+  },
+  {
+   "file": "unlisted-member.prsn",
+   "rule": null,
+   "outcome": "valid",
+   "why": "a member the manifest does not list is ignored and never written back"
+  },
+  {
+   "file": "mimetype-not-first.prsn",
+   "rule": "container",
+   "outcome": "refuse",
+   "why": "`mimetype` is not the first member"
+  },
+  {
+   "file": "mimetype-compressed.prsn",
+   "rule": "container",
+   "outcome": "refuse",
+   "why": "`mimetype` is DEFLATE-compressed"
+  },
+  {
+   "file": "mimetype-extra-field.prsn",
+   "rule": "container",
+   "outcome": "refuse",
+   "why": "`mimetype` has a local extra field"
+  },
+  {
+   "file": "mimetype-wrong.prsn",
+   "rule": "container",
+   "outcome": "refuse",
+   "why": "`mimetype` is not a .prsn media type"
+  },
+  {
+   "file": "duplicate-member.prsn",
+   "rule": "container",
+   "outcome": "refuse",
+   "why": "two members share a name (readers could see different bytes)"
+  }
+ ]
+}

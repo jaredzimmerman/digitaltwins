@@ -1,0 +1,1471 @@
+{
+ "version": 1,
+ "spec": "spec/prsn.md, Eviction procedure; spec/voice.md; spec/enrichment-model.md section 7",
+ "description": "Eviction vectors. `role` is `voice.samples` (budget in seconds, grouped by `condition`) or `face.samples` (budget in counts per look, grouped by `angle_bin` and `expression_class`). Run the eviction procedure on `bank` with `budget`, `pinned` (entry names never removed), `redundancy` (name -> value in [0,1], default 0), `newcomer` (a top-tier entry just inserted, if any) and `today`; the names removed, in order, must equal `evicted`. Entry fields: tier, score (quality.score), seconds or one per entry, bytes, condition or angle_bin + expression_class + look, at (origin.at, for age), expires.",
+ "today": "2026-10-10",
+ "cases": [
+  {
+   "name": "tier-outranks-score",
+   "why": "observed clips go before enrolled ones however well they score",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.3,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e2",
+     "tier": "enrolled",
+     "score": 0.31,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e3",
+     "tier": "enrolled",
+     "score": 0.32,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e4",
+     "tier": "enrolled",
+     "score": 0.33,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o1",
+     "tier": "observed",
+     "score": 0.99,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o2",
+     "tier": "observed",
+     "score": 0.98,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o3",
+     "tier": "observed",
+     "score": 0.97,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "o3"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "lowest-tier-first-then-lowest-quality",
+   "why": "within the lowest tier present, the lowest effective quality goes",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "p1",
+     "tier": "professional",
+     "score": 0.1,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "i1",
+     "tier": "imported",
+     "score": 0.2,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "i2",
+     "tier": "imported",
+     "score": 0.9,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o1",
+     "tier": "observed",
+     "score": 0.95,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o2",
+     "tier": "observed",
+     "score": 0.5,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o3",
+     "tier": "observed",
+     "score": 0.8,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o4",
+     "tier": "observed",
+     "score": 0.7,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "o2"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "ties-go-to-the-older-entry",
+   "why": "equal effective quality: the older `at` goes",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.5,
+     "seconds": 40,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "old",
+     "tier": "observed",
+     "score": 0.5,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-01-01T00:00:00Z",
+     "bytes": 3
+    },
+    {
+     "name": "new",
+     "tier": "observed",
+     "score": 0.5,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-09-01T00:00:00Z",
+     "bytes": 3
+    },
+    {
+     "name": "best",
+     "tier": "observed",
+     "score": 0.9,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 4
+    }
+   ],
+   "evicted": [
+    "old"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "condition-floor-protects-its-best",
+   "why": "the only far-field material is the worst audio but is protected up to the floor",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "ff1",
+     "tier": "observed",
+     "score": 0.2,
+     "seconds": 5,
+     "condition": "far-field",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 3
+    },
+    {
+     "name": "ff2",
+     "tier": "observed",
+     "score": 0.1,
+     "seconds": 5,
+     "condition": "far-field",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 3
+    },
+    {
+     "name": "h1",
+     "tier": "observed",
+     "score": 0.9,
+     "seconds": 11,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h2",
+     "tier": "observed",
+     "score": 0.8,
+     "seconds": 11,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h3",
+     "tier": "observed",
+     "score": 0.7,
+     "seconds": 11,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h4",
+     "tier": "observed",
+     "score": 0.6,
+     "seconds": 11,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h5",
+     "tier": "observed",
+     "score": 0.5,
+     "seconds": 11,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "h5"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "material-above-a-floor-is-not-protected",
+   "why": "the lowest tier is all at its floors, so the next tier gives; its second far-field clip is past the floor",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "o1",
+     "tier": "observed",
+     "score": 0.9,
+     "seconds": 5,
+     "condition": "noisy",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o2",
+     "tier": "observed",
+     "score": 0.8,
+     "seconds": 4,
+     "condition": "noisy",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "ff1",
+     "tier": "imported",
+     "score": 0.2,
+     "seconds": 9,
+     "condition": "far-field",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 3
+    },
+    {
+     "name": "ff2",
+     "tier": "imported",
+     "score": 0.1,
+     "seconds": 9,
+     "condition": "far-field",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 3
+    },
+    {
+     "name": "h1",
+     "tier": "imported",
+     "score": 0.9,
+     "seconds": 12,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h2",
+     "tier": "imported",
+     "score": 0.8,
+     "seconds": 12,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h3",
+     "tier": "imported",
+     "score": 0.7,
+     "seconds": 12,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "ff2"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "seed-source-is-pinned",
+   "why": "the current seed's source clip is never evicted",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.5,
+     "seconds": 30,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "seedsrc",
+     "tier": "observed",
+     "score": 0.01,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 7
+    },
+    {
+     "name": "o2",
+     "tier": "observed",
+     "score": 0.6,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o3",
+     "tier": "observed",
+     "score": 0.7,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o4",
+     "tier": "observed",
+     "score": 0.8,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "pinned": [
+    "seedsrc"
+   ],
+   "evicted": [
+    "o2"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "last-of-a-condition-survives",
+   "why": "the last entry of a condition is never evicted, even with no floor",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 0,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "lonely",
+     "tier": "observed",
+     "score": 0.01,
+     "seconds": 10.0,
+     "condition": "noisy",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 6
+    },
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.9,
+     "seconds": 40,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o1",
+     "tier": "observed",
+     "score": 0.5,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o2",
+     "tier": "observed",
+     "score": 0.6,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "o1"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "last-of-a-condition-survives-floors-yielding",
+   "why": "floors yield, but never the last entry of a condition",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.5,
+     "seconds": 22,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e2",
+     "tier": "enrolled",
+     "score": 0.5,
+     "seconds": 22,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "lonely",
+     "tier": "observed",
+     "score": 0.01,
+     "seconds": 8,
+     "condition": "noisy",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 6
+    },
+    {
+     "name": "f1",
+     "tier": "observed",
+     "score": 0.6,
+     "seconds": 5,
+     "condition": "far-field",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "f2",
+     "tier": "observed",
+     "score": 0.5,
+     "seconds": 4,
+     "condition": "far-field",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "f2"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "lower-tiers-yield-floors-before-the-reserve",
+   "why": "the top tiers are under their reserve, so lower-tier floors give first",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.2,
+     "seconds": 22,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e2",
+     "tier": "enrolled",
+     "score": 0.2,
+     "seconds": 22,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "n1",
+     "tier": "observed",
+     "score": 0.99,
+     "seconds": 5,
+     "condition": "noisy",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "n2",
+     "tier": "observed",
+     "score": 0.98,
+     "seconds": 5,
+     "condition": "noisy",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "f1",
+     "tier": "observed",
+     "score": 0.97,
+     "seconds": 8,
+     "condition": "far-field",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "n2"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "reserve-gives-only-over-its-share",
+   "why": "top tiers hold 60 s against a 45 s reserve; the observed clip is the last of its condition",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.9,
+     "seconds": 15,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e2",
+     "tier": "enrolled",
+     "score": 0.8,
+     "seconds": 15,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e3",
+     "tier": "enrolled",
+     "score": 0.7,
+     "seconds": 15,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e4",
+     "tier": "enrolled",
+     "score": 0.1,
+     "seconds": 15,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o1",
+     "tier": "observed",
+     "score": 0.99,
+     "seconds": 5,
+     "condition": "noisy",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "e4"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "top-tier-newcomer-worse-goes-itself",
+   "why": "a new enrolled clip may only displace a worse top-tier clip in its own condition; otherwise it goes",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.9,
+     "seconds": 15,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e2",
+     "tier": "enrolled",
+     "score": 0.8,
+     "seconds": 15,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h1",
+     "tier": "enrolled",
+     "score": 0.1,
+     "seconds": 15,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h2",
+     "tier": "enrolled",
+     "score": 0.2,
+     "seconds": 10,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "new",
+     "tier": "enrolled",
+     "score": 0.5,
+     "seconds": 10,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 3
+    }
+   ],
+   "newcomer": "new",
+   "evicted": [
+    "new"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "top-tier-newcomer-better-displaces",
+   "why": "a better enrolled newcomer displaces the worst enrolled clip of its condition",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.9,
+     "seconds": 15,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e2",
+     "tier": "enrolled",
+     "score": 0.8,
+     "seconds": 15,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h1",
+     "tier": "enrolled",
+     "score": 0.1,
+     "seconds": 15,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h2",
+     "tier": "enrolled",
+     "score": 0.2,
+     "seconds": 10,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "new",
+     "tier": "enrolled",
+     "score": 0.95,
+     "seconds": 10,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 3
+    }
+   ],
+   "newcomer": "new",
+   "evicted": [
+    "e2"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "pinned-newcomer-stays",
+   "why": "a pinned newcomer is never the one that goes; the reserve gives its worst unprotected clip",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.9,
+     "seconds": 15,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e2",
+     "tier": "enrolled",
+     "score": 0.8,
+     "seconds": 15,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h1",
+     "tier": "enrolled",
+     "score": 0.1,
+     "seconds": 15,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "h2",
+     "tier": "enrolled",
+     "score": 0.2,
+     "seconds": 10,
+     "condition": "headset",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "new",
+     "tier": "enrolled",
+     "score": 0.5,
+     "seconds": 10,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 3
+    }
+   ],
+   "newcomer": "new",
+   "pinned": [
+    "new"
+   ],
+   "evicted": [
+    "h1"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "near-duplicate-goes-first",
+   "why": "redundancy lowers effective quality: a near-duplicate of a better clip goes before a worse distinct one",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.9,
+     "seconds": 31,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "best",
+     "tier": "observed",
+     "score": 0.9,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 4
+    },
+    {
+     "name": "dup",
+     "tier": "observed",
+     "score": 0.85,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 3
+    },
+    {
+     "name": "distinct",
+     "tier": "observed",
+     "score": 0.6,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 8
+    }
+   ],
+   "redundancy": {
+    "best": 0.5,
+    "dup": 0.5,
+    "distinct": 0.1
+   },
+   "evicted": [
+    "dup"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "without-redundancy",
+   "why": "the same bank without redundancy: the lowest score goes",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.9,
+     "seconds": 31,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "best",
+     "tier": "observed",
+     "score": 0.9,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 4
+    },
+    {
+     "name": "dup",
+     "tier": "observed",
+     "score": 0.85,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 3
+    },
+    {
+     "name": "distinct",
+     "tier": "observed",
+     "score": 0.6,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 8
+    }
+   ],
+   "evicted": [
+    "distinct"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "expired-first",
+   "why": "expired entries go first, whatever their tier, even within budget",
+   "budget": {
+    "seconds": 60,
+    "bytes": 1000000000,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "stale",
+     "tier": "professional",
+     "score": 0.99,
+     "seconds": 5,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 5,
+     "expires": "2001-01-01"
+    },
+    {
+     "name": "o1",
+     "tier": "observed",
+     "score": 0.5,
+     "seconds": 10.0,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "stale"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "budget-by-bytes",
+   "why": "a byte cap counts as well as a seconds cap",
+   "budget": {
+    "seconds": 60,
+    "bytes": 2500,
+    "per_condition_min_seconds": 8,
+    "reserve_seconds": 45
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.9,
+     "seconds": 4,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 1000
+    },
+    {
+     "name": "o1",
+     "tier": "observed",
+     "score": 0.5,
+     "seconds": 4,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 1000
+    },
+    {
+     "name": "o2",
+     "tier": "observed",
+     "score": 0.6,
+     "seconds": 4,
+     "condition": "quiet",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 1000
+    }
+   ],
+   "evicted": [
+    "o1"
+   ],
+   "role": "voice.samples"
+  },
+  {
+   "name": "face-lowest-tier-first",
+   "why": "counts instead of seconds: the lowest tier gives its worst unprotected still",
+   "role": "face.samples",
+   "budget": {
+    "per_look": {
+     "count": 4,
+     "bytes": 1000000000
+    },
+    "floors": {
+     "per_angle_bin_min": 1,
+     "per_expression_class_min": 1
+    }
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.9,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e2",
+     "tier": "enrolled",
+     "score": 0.8,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o1",
+     "tier": "observed",
+     "score": 0.95,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o2",
+     "tier": "observed",
+     "score": 0.5,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o3",
+     "tier": "observed",
+     "score": 0.7,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "o2"
+   ]
+  },
+  {
+   "name": "face-angle-bin-floor",
+   "why": "an angle bin's best stills are protected up to per_angle_bin_min",
+   "role": "face.samples",
+   "budget": {
+    "per_look": {
+     "count": 4,
+     "bytes": 1000000000
+    },
+    "floors": {
+     "per_angle_bin_min": 2,
+     "per_expression_class_min": 0
+    }
+   },
+   "bank": [
+    {
+     "name": "p1",
+     "tier": "observed",
+     "score": 0.2,
+     "look": "look-a",
+     "angle_bin": 0,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "p2",
+     "tier": "observed",
+     "score": 0.1,
+     "look": "look-a",
+     "angle_bin": 0,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "f1",
+     "tier": "observed",
+     "score": 0.9,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "f2",
+     "tier": "observed",
+     "score": 0.8,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "f3",
+     "tier": "observed",
+     "score": 0.7,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "f3"
+   ]
+  },
+  {
+   "name": "face-expression-class-floor",
+   "why": "an expression class's best stills are protected up to per_expression_class_min",
+   "role": "face.samples",
+   "budget": {
+    "per_look": {
+     "count": 4,
+     "bytes": 1000000000
+    },
+    "floors": {
+     "per_angle_bin_min": 0,
+     "per_expression_class_min": 2
+    }
+   },
+   "bank": [
+    {
+     "name": "s1",
+     "tier": "observed",
+     "score": 0.1,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "smile-open",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "s2",
+     "tier": "observed",
+     "score": 0.15,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "smile-open",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "n1",
+     "tier": "observed",
+     "score": 0.9,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "n2",
+     "tier": "observed",
+     "score": 0.8,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "n3",
+     "tier": "observed",
+     "score": 0.7,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "n3"
+   ]
+  },
+  {
+   "name": "face-last-of-a-bin-survives",
+   "why": "the only still of an angle bin is never removed",
+   "role": "face.samples",
+   "budget": {
+    "per_look": {
+     "count": 3,
+     "bytes": 1000000000
+    },
+    "floors": {
+     "per_angle_bin_min": 0,
+     "per_expression_class_min": 0
+    }
+   },
+   "bank": [
+    {
+     "name": "lonely",
+     "tier": "observed",
+     "score": 0.01,
+     "look": "look-a",
+     "angle_bin": 3,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 6
+    },
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.9,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o1",
+     "tier": "observed",
+     "score": 0.5,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o2",
+     "tier": "observed",
+     "score": 0.6,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "o1"
+   ]
+  },
+  {
+   "name": "face-tier-outranks-score",
+   "why": "observed stills go before enrolled ones however well they score",
+   "role": "face.samples",
+   "budget": {
+    "per_look": {
+     "count": 3,
+     "bytes": 1000000000
+    },
+    "floors": {
+     "per_angle_bin_min": 1,
+     "per_expression_class_min": 1
+    }
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.3,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e2",
+     "tier": "enrolled",
+     "score": 0.31,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o1",
+     "tier": "observed",
+     "score": 0.99,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o2",
+     "tier": "observed",
+     "score": 0.98,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    }
+   ],
+   "evicted": [
+    "o2"
+   ]
+  },
+  {
+   "name": "face-budget-is-per-look",
+   "why": "each look is budgeted on its own: a full look never evicts from another",
+   "role": "face.samples",
+   "budget": {
+    "per_look": {
+     "count": 4,
+     "bytes": 1000000000
+    },
+    "floors": {
+     "per_angle_bin_min": 1,
+     "per_expression_class_min": 1
+    }
+   },
+   "bank": [
+    {
+     "name": "e1",
+     "tier": "enrolled",
+     "score": 0.9,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "e2",
+     "tier": "enrolled",
+     "score": 0.8,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o1",
+     "tier": "observed",
+     "score": 0.95,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o2",
+     "tier": "observed",
+     "score": 0.5,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "o3",
+     "tier": "observed",
+     "score": 0.7,
+     "look": "look-a",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 2
+    },
+    {
+     "name": "b-o1",
+     "tier": "observed",
+     "score": 0.1,
+     "look": "look-b",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 4
+    },
+    {
+     "name": "b-o2",
+     "tier": "observed",
+     "score": 0.05,
+     "look": "look-b",
+     "angle_bin": 12,
+     "expression_class": "neutral",
+     "at": "2026-10-01T00:00:00Z",
+     "bytes": 4
+    }
+   ],
+   "evicted": [
+    "o2"
+   ]
+  }
+ ]
+}

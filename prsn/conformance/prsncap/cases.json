@@ -1,0 +1,12 @@
+{
+ "version": 1,
+ "spec": "spec/prsncap.md",
+ "cases": [
+  {
+   "id": "tracking-template-missing",
+   "rule": "tracking-template",
+   "outcome": "invalid",
+   "why": "face-tracking data without the embedded ARKit face template it references"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/budgets.schema.json",
+  "title": "manifest.budgets",
+  "description": "Per `<modality>.<role>` budgets: a size cap and coverage floors (spec/prsn.md, Enrichment; spec/voice.md; spec/enrichment-model.md section 7). Keys a reader does not know are kept.",
+  "type": "object",
+  "propertyNames": {"pattern": "^[a-z0-9-]+\\.[a-z0-9-]+$"},
+  "additionalProperties": {"$ref": "#/$defs/budget"},
+  "$defs": {
+    "nonneg": {"type": "number", "minimum": 0},
+    "budget": {
+      "type": "object",
+      "properties": {
+        "count": {"type": "integer", "minimum": 0},
+        "bytes": {"type": "integer", "minimum": 0},
+        "seconds": {"$ref": "#/$defs/nonneg"},
+        "models": {"type": "integer", "minimum": 0},
+        "candidates": {"type": "integer", "minimum": 0},
+        "per_condition_min_count": {"type": "integer", "minimum": 0},
+        "per_condition_min_seconds": {"$ref": "#/$defs/nonneg"},
+        "reserve_seconds": {"$ref": "#/$defs/nonneg"},
+        "per_look": {
+          "type": "object",
+          "properties": {"count": {"type": "integer", "minimum": 0}, "bytes": {"type": "integer", "minimum": 0}},
+          "additionalProperties": true
+        },
+        "floors": {
+          "type": "object",
+          "properties": {
+            "per_angle_bin_min": {"type": "integer", "minimum": 0},
+            "per_expression_class_min": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": true
+        },
+        "angle_bins": {"type": "string"},
+        "expression_classes": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,627 @@
+{
+ "rule": "Head Euler angles are display-upright: for a stream with EXIF `orientation`, R_cvup_from_head = U . R_cvcam_from_head . H and R_v = F3 . R_cvup_from_head = Ry(yaw) . Rx(pitch) . Rz(roll). U is the 3x3 lift of A (orientations table in vision_pose.json); H = diag(-1,1,1) for mirrored orientations (2, 4, 5, 7), else I. Stored 4x4 poses stay sensor-native cv-cam; only the angles (and bins) are upright. The inverse (angles -> stored R) must rebuild R_cvcam_from_head_row_major.",
+ "contract": "spec/frames-and-units.md \u00a73",
+ "tolerance_deg": 1e-07,
+ "cases": [
+  {
+   "orientation": 1,
+   "R_cvcam_from_head_row_major": [
+    0.753401184860794,
+    -0.177959325864763,
+    0.633022221559489,
+    -0.085831651177431,
+    -0.981060262190407,
+    -0.17364817766693,
+    0.651935259290758,
+    0.076493400294726,
+    -0.754406506735489
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": 40.0,
+    "pitch": -10.0,
+    "roll": 5.0
+   },
+   "expected_deg": {
+    "yaw": 40.0,
+    "pitch": -10.0,
+    "roll": 5.0
+   },
+   "why": "upright stream: stored and display frames coincide"
+  },
+  {
+   "orientation": 6,
+   "R_cvcam_from_head_row_major": [
+    0.0,
+    -1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 90.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "EXIF 6 (turn 90 CW to display): a head rolled 90 CCW in the stored frame is upright"
+  },
+  {
+   "orientation": 6,
+   "R_cvcam_from_head_row_major": [
+    0.0,
+    -1.0,
+    0.0,
+    -0.866025403784439,
+    0.0,
+    -0.5,
+    0.5,
+    0.0,
+    -0.866025403784439
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": 0.0,
+    "pitch": -30.0,
+    "roll": 90.0
+   },
+   "expected_deg": {
+    "yaw": 30.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "display-right is stored-up: a stored chin-up is a display yaw"
+  },
+  {
+   "orientation": 6,
+   "R_cvcam_from_head_row_major": [
+    0.0,
+    -0.939692620785908,
+    0.342020143325669,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    -0.342020143325669,
+    -0.939692620785908
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": 20.0,
+    "pitch": 0.0,
+    "roll": 90.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 20.0,
+    "roll": 0.0
+   },
+   "why": "display-down is stored-right: a stored +yaw is a display chin-down"
+  },
+  {
+   "orientation": 6,
+   "R_cvcam_from_head_row_major": [
+    -0.17364817766693,
+    -0.984807753012208,
+    0.0,
+    -0.984807753012208,
+    0.17364817766693,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 100.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 10.0
+   },
+   "why": "rolls subtract the 90 of the sensor"
+  },
+  {
+   "orientation": 8,
+   "R_cvcam_from_head_row_major": [
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": -90.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "EXIF 8 (turn 90 CCW to display)"
+  },
+  {
+   "orientation": 3,
+   "R_cvcam_from_head_row_major": [
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": -180.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "EXIF 3: upside-down stored frame"
+  },
+  {
+   "orientation": 3,
+   "R_cvcam_from_head_row_major": [
+    -0.866025403784439,
+    0.0,
+    -0.5,
+    0.0,
+    1.0,
+    0.0,
+    0.5,
+    0.0,
+    -0.866025403784439
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": -30.0,
+    "pitch": 0.0,
+    "roll": -180.0
+   },
+   "expected_deg": {
+    "yaw": 30.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "display-right is stored-left"
+  },
+  {
+   "orientation": 2,
+   "R_cvcam_from_head_row_major": [
+    0.87029713361349,
+    -0.011014609657371,
+    -0.492403876506104,
+    0.085831651177431,
+    -0.981060262190407,
+    0.17364817766693,
+    -0.484990543083366,
+    -0.193389349047422,
+    -0.852868531952443
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": -30.0,
+    "pitch": 10.0,
+    "roll": -5.0
+   },
+   "expected_deg": {
+    "yaw": 30.0,
+    "pitch": 10.0,
+    "roll": 5.0
+   },
+   "why": "mirrored: yaw and roll flip, pitch keeps its sign"
+  },
+  {
+   "orientation": 4,
+   "R_cvcam_from_head_row_major": [
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": -180.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "vertical mirror: the (mirrored) face appears upside down when stored"
+  },
+  {
+   "orientation": 5,
+   "R_cvcam_from_head_row_major": [
+    0.0,
+    -1.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 90.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "transpose: head top points stored-left"
+  },
+  {
+   "orientation": 7,
+   "R_cvcam_from_head_row_major": [
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -1.0
+   ],
+   "stored_frame_euler_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": -90.0
+   },
+   "expected_deg": {
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "roll": 0.0
+   },
+   "why": "transverse: head top points stored-right"
+  },
+  {
+   "orientation": 1,
+   "R_cvcam_from_head_row_major": [
+    0.885258900489872,
+    -0.213145824211896,
+    0.413383038747957,
+    -0.136131834790772,
+    -0.968628335522866,
+    -0.207911690817759,
+    0.444730033458458,
+    0.127781083276176,
+    -0.886502787416264
+   ],
+   "expected_deg": {
+    "yaw": 25.0,
+    "pitch": -12.0,
+    "roll": 8.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 1,
+   "R_cvcam_from_head_row_major": [
+    0.040008756548142,
+    0.579769465589431,
+    -0.813797681349374,
+    0.55667039922642,
+    0.663413948168938,
+    0.5,
+    0.829769465589431,
+    -0.473021458440361,
+    -0.296198132726024
+   ],
+   "expected_deg": {
+    "yaw": -70.0,
+    "pitch": 30.0,
+    "roll": -140.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 2,
+   "R_cvcam_from_head_row_major": [
+    0.885258900489872,
+    0.213145824211896,
+    -0.413383038747957,
+    0.136131834790772,
+    -0.968628335522866,
+    -0.207911690817759,
+    -0.444730033458458,
+    0.127781083276176,
+    -0.886502787416264
+   ],
+   "expected_deg": {
+    "yaw": 25.0,
+    "pitch": -12.0,
+    "roll": 8.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 2,
+   "R_cvcam_from_head_row_major": [
+    0.040008756548142,
+    -0.579769465589431,
+    0.813797681349374,
+    -0.55667039922642,
+    0.663413948168938,
+    0.5,
+    -0.829769465589431,
+    -0.473021458440361,
+    -0.296198132726024
+   ],
+   "expected_deg": {
+    "yaw": -70.0,
+    "pitch": 30.0,
+    "roll": -140.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 3,
+   "R_cvcam_from_head_row_major": [
+    -0.885258900489872,
+    0.213145824211896,
+    -0.413383038747957,
+    0.136131834790772,
+    0.968628335522866,
+    0.207911690817759,
+    0.444730033458458,
+    0.127781083276176,
+    -0.886502787416264
+   ],
+   "expected_deg": {
+    "yaw": 25.0,
+    "pitch": -12.0,
+    "roll": 8.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 3,
+   "R_cvcam_from_head_row_major": [
+    -0.040008756548142,
+    -0.579769465589431,
+    0.813797681349374,
+    -0.55667039922642,
+    -0.663413948168938,
+    -0.5,
+    0.829769465589431,
+    -0.473021458440361,
+    -0.296198132726024
+   ],
+   "expected_deg": {
+    "yaw": -70.0,
+    "pitch": 30.0,
+    "roll": -140.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 4,
+   "R_cvcam_from_head_row_major": [
+    -0.885258900489872,
+    -0.213145824211896,
+    0.413383038747957,
+    -0.136131834790772,
+    0.968628335522866,
+    0.207911690817759,
+    -0.444730033458458,
+    0.127781083276176,
+    -0.886502787416264
+   ],
+   "expected_deg": {
+    "yaw": 25.0,
+    "pitch": -12.0,
+    "roll": 8.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 4,
+   "R_cvcam_from_head_row_major": [
+    -0.040008756548142,
+    0.579769465589431,
+    -0.813797681349374,
+    0.55667039922642,
+    -0.663413948168938,
+    -0.5,
+    -0.829769465589431,
+    -0.473021458440361,
+    -0.296198132726024
+   ],
+   "expected_deg": {
+    "yaw": -70.0,
+    "pitch": 30.0,
+    "roll": -140.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 5,
+   "R_cvcam_from_head_row_major": [
+    0.136131834790772,
+    -0.968628335522866,
+    -0.207911690817759,
+    -0.885258900489872,
+    -0.213145824211896,
+    0.413383038747957,
+    -0.444730033458458,
+    0.127781083276176,
+    -0.886502787416264
+   ],
+   "expected_deg": {
+    "yaw": 25.0,
+    "pitch": -12.0,
+    "roll": 8.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 5,
+   "R_cvcam_from_head_row_major": [
+    -0.55667039922642,
+    0.663413948168938,
+    0.5,
+    -0.040008756548142,
+    0.579769465589431,
+    -0.813797681349374,
+    -0.829769465589431,
+    -0.473021458440361,
+    -0.296198132726024
+   ],
+   "expected_deg": {
+    "yaw": -70.0,
+    "pitch": 30.0,
+    "roll": -140.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 6,
+   "R_cvcam_from_head_row_major": [
+    -0.136131834790772,
+    -0.968628335522866,
+    -0.207911690817759,
+    -0.885258900489872,
+    0.213145824211896,
+    -0.413383038747957,
+    0.444730033458458,
+    0.127781083276176,
+    -0.886502787416264
+   ],
+   "expected_deg": {
+    "yaw": 25.0,
+    "pitch": -12.0,
+    "roll": 8.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 6,
+   "R_cvcam_from_head_row_major": [
+    0.55667039922642,
+    0.663413948168938,
+    0.5,
+    -0.040008756548142,
+    -0.579769465589431,
+    0.813797681349374,
+    0.829769465589431,
+    -0.473021458440361,
+    -0.296198132726024
+   ],
+   "expected_deg": {
+    "yaw": -70.0,
+    "pitch": 30.0,
+    "roll": -140.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 7,
+   "R_cvcam_from_head_row_major": [
+    -0.136131834790772,
+    0.968628335522866,
+    0.207911690817759,
+    0.885258900489872,
+    0.213145824211896,
+    -0.413383038747957,
+    -0.444730033458458,
+    0.127781083276176,
+    -0.886502787416264
+   ],
+   "expected_deg": {
+    "yaw": 25.0,
+    "pitch": -12.0,
+    "roll": 8.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 7,
+   "R_cvcam_from_head_row_major": [
+    0.55667039922642,
+    -0.663413948168938,
+    -0.5,
+    0.040008756548142,
+    -0.579769465589431,
+    0.813797681349374,
+    -0.829769465589431,
+    -0.473021458440361,
+    -0.296198132726024
+   ],
+   "expected_deg": {
+    "yaw": -70.0,
+    "pitch": 30.0,
+    "roll": -140.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 8,
+   "R_cvcam_from_head_row_major": [
+    0.136131834790772,
+    0.968628335522866,
+    0.207911690817759,
+    0.885258900489872,
+    -0.213145824211896,
+    0.413383038747957,
+    0.444730033458458,
+    0.127781083276176,
+    -0.886502787416264
+   ],
+   "expected_deg": {
+    "yaw": 25.0,
+    "pitch": -12.0,
+    "roll": 8.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  },
+  {
+   "orientation": 8,
+   "R_cvcam_from_head_row_major": [
+    -0.55667039922642,
+    -0.663413948168938,
+    -0.5,
+    0.040008756548142,
+    0.579769465589431,
+    -0.813797681349374,
+    0.829769465589431,
+    -0.473021458440361,
+    -0.296198132726024
+   ],
+   "expected_deg": {
+    "yaw": -70.0,
+    "pitch": 30.0,
+    "roll": -140.0
+   },
+   "why": "forward construction: R = U^T . F3 . Ry.Rx.Rz(expected) . H"
+  }
+ ]
+}

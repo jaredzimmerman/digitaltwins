@@ -1,0 +1,750 @@
+{
+ "description": "action_key vectors (derivation-recipes.md R1). For each valid vector, the canonical JSON of the preimage built from `derivation` must equal `preimage` byte for byte, and `action_key` is `sha256:` + hex SHA-256 of those bytes. Invalid vectors must be rejected. Rule: README.md.",
+ "version": 1,
+ "valid": [
+  {
+   "name": "contract_example",
+   "derivation": {
+    "family": "org.prsn.method.static-splat",
+    "recipe": {
+     "id": "org.example.recipe.splat.splatx-mcmc",
+     "version": "1.2.0",
+     "rank": 40
+    },
+    "tool": {
+     "name": "example-writer",
+     "version": "0.3.0",
+     "build": "git:3f9c2e1",
+     "platform": "macOS 27.0 / Apple M3 / Metal 4"
+    },
+    "models": [
+     {
+      "role": "segmenter",
+      "key": "sam2.1-hiera-large",
+      "sha256": "9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344",
+      "license": "Apache-2.0"
+     },
+     {
+      "role": "head-model",
+      "key": "gnm-head-v3",
+      "sha256": "1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809",
+      "license": "Apache-2.0",
+      "use_restrictions": []
+     }
+    ],
+    "inputs": [
+     {
+      "capture": "sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce",
+      "look": "look-2026-10",
+      "era": "era-1",
+      "select": {
+       "streams": [
+        "d0/rgb.front",
+        "d0/depth.front"
+       ],
+       "phases": [
+        "orbit",
+        "face"
+       ],
+       "exclude_split": "holdout"
+      }
+     },
+     {
+      "cache": "sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e",
+      "role": "masks"
+     },
+     {
+      "entry": "face/geometry/gnm-head.fit.npz",
+      "sha256": "935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45",
+      "role": "init-mesh"
+     }
+    ],
+    "params": {
+     "iterations": 30000,
+     "sh_degree": 3,
+     "densify": "mcmc",
+     "cap": 600000,
+     "seed": 1234
+    },
+    "action_key": "sha256:ignored-when-computing",
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "split": "holdout",
+     "metric": "psnr",
+     "value": 31.8
+    },
+    "supersedes": null,
+    "created": "2026-11-14T03:12:09Z",
+    "duration_s": 1840,
+    "license_constraints": [
+     "no-pornographic-use"
+    ]
+   },
+   "preimage": "{\"family\":\"org.prsn.method.static-splat\",\"inputs\":[{\"cache\":\"sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e\",\"role\":\"masks\"},{\"capture\":\"sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce\",\"select\":{\"exclude_split\":\"holdout\",\"phases\":[\"orbit\",\"face\"],\"streams\":[\"d0/rgb.front\",\"d0/depth.front\"]}},{\"role\":\"init-mesh\",\"sha256\":\"935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45\"}],\"models\":[\"1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809\",\"9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344\"],\"params\":{\"cap\":600000,\"densify\":\"mcmc\",\"iterations\":30000,\"seed\":1234,\"sh_degree\":3},\"recipe\":{\"id\":\"org.example.recipe.splat.splatx-mcmc\",\"version\":\"1.2.0\"}}",
+   "action_key": "sha256:7aa640d252cce7412efedd2374db9e5c2a6daeafebcaed1ac1d8e1f56c2a984a"
+  },
+  {
+   "name": "contract_example_reordered_relabelled_same_key",
+   "derivation": {
+    "family": "org.prsn.method.static-splat",
+    "recipe": {
+     "id": "org.example.recipe.splat.splatx-mcmc",
+     "version": "1.2.0",
+     "rank": 99
+    },
+    "tool": {
+     "name": "example-writer",
+     "version": "0.3.0",
+     "build": "git:0000000",
+     "platform": "macOS 27.0 / Apple M3 / Metal 4"
+    },
+    "models": [
+     {
+      "role": "head-model",
+      "key": "gnm-head-v3",
+      "sha256": "1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809",
+      "license": "Apache-2.0",
+      "use_restrictions": []
+     },
+     {
+      "role": "segmenter",
+      "key": "sam2.1-hiera-large",
+      "sha256": "9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344",
+      "license": "Apache-2.0"
+     }
+    ],
+    "inputs": [
+     {
+      "entry": "face/geometry/renamed.npz",
+      "sha256": "935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45",
+      "role": "init-mesh"
+     },
+     {
+      "cache": "sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e",
+      "role": "masks"
+     },
+     {
+      "capture": "sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce",
+      "look": "look-2027-01",
+      "era": "era-1",
+      "select": {
+       "streams": [
+        "d0/rgb.front",
+        "d0/depth.front"
+       ],
+       "phases": [
+        "orbit",
+        "face"
+       ],
+       "exclude_split": "holdout"
+      }
+     }
+    ],
+    "params": {
+     "iterations": 30000,
+     "sh_degree": 3,
+     "densify": "mcmc",
+     "cap": 600000,
+     "seed": 1234
+    },
+    "action_key": "sha256:ignored-when-computing",
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "split": "holdout",
+     "metric": "psnr",
+     "value": 12.0
+    },
+    "supersedes": null,
+    "created": "2030-01-01T00:00:00Z",
+    "duration_s": 1840,
+    "license_constraints": [
+     "no-pornographic-use"
+    ]
+   },
+   "preimage": "{\"family\":\"org.prsn.method.static-splat\",\"inputs\":[{\"cache\":\"sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e\",\"role\":\"masks\"},{\"capture\":\"sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce\",\"select\":{\"exclude_split\":\"holdout\",\"phases\":[\"orbit\",\"face\"],\"streams\":[\"d0/rgb.front\",\"d0/depth.front\"]}},{\"role\":\"init-mesh\",\"sha256\":\"935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45\"}],\"models\":[\"1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809\",\"9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344\"],\"params\":{\"cap\":600000,\"densify\":\"mcmc\",\"iterations\":30000,\"seed\":1234,\"sh_degree\":3},\"recipe\":{\"id\":\"org.example.recipe.splat.splatx-mcmc\",\"version\":\"1.2.0\"}}",
+   "action_key": "sha256:7aa640d252cce7412efedd2374db9e5c2a6daeafebcaed1ac1d8e1f56c2a984a",
+   "note": "Same key as contract_example: order, rank, tool.build, look/era, entry path, eval and created are not in the key."
+  },
+  {
+   "name": "param_change_changes_key",
+   "derivation": {
+    "family": "org.prsn.method.static-splat",
+    "recipe": {
+     "id": "org.example.recipe.splat.splatx-mcmc",
+     "version": "1.2.0",
+     "rank": 40
+    },
+    "tool": {
+     "name": "example-writer",
+     "version": "0.3.0",
+     "build": "git:3f9c2e1",
+     "platform": "macOS 27.0 / Apple M3 / Metal 4"
+    },
+    "models": [
+     {
+      "role": "segmenter",
+      "key": "sam2.1-hiera-large",
+      "sha256": "9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344",
+      "license": "Apache-2.0"
+     },
+     {
+      "role": "head-model",
+      "key": "gnm-head-v3",
+      "sha256": "1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809",
+      "license": "Apache-2.0",
+      "use_restrictions": []
+     }
+    ],
+    "inputs": [
+     {
+      "capture": "sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce",
+      "look": "look-2026-10",
+      "era": "era-1",
+      "select": {
+       "streams": [
+        "d0/rgb.front",
+        "d0/depth.front"
+       ],
+       "phases": [
+        "orbit",
+        "face"
+       ],
+       "exclude_split": "holdout"
+      }
+     },
+     {
+      "cache": "sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e",
+      "role": "masks"
+     },
+     {
+      "entry": "face/geometry/gnm-head.fit.npz",
+      "sha256": "935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45",
+      "role": "init-mesh"
+     }
+    ],
+    "params": {
+     "iterations": 30000,
+     "sh_degree": 3,
+     "densify": "mcmc",
+     "cap": 600000,
+     "seed": 1235
+    },
+    "action_key": "sha256:ignored-when-computing",
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "split": "holdout",
+     "metric": "psnr",
+     "value": 31.8
+    },
+    "supersedes": null,
+    "created": "2026-11-14T03:12:09Z",
+    "duration_s": 1840,
+    "license_constraints": [
+     "no-pornographic-use"
+    ]
+   },
+   "preimage": "{\"family\":\"org.prsn.method.static-splat\",\"inputs\":[{\"cache\":\"sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e\",\"role\":\"masks\"},{\"capture\":\"sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce\",\"select\":{\"exclude_split\":\"holdout\",\"phases\":[\"orbit\",\"face\"],\"streams\":[\"d0/rgb.front\",\"d0/depth.front\"]}},{\"role\":\"init-mesh\",\"sha256\":\"935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45\"}],\"models\":[\"1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809\",\"9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344\"],\"params\":{\"cap\":600000,\"densify\":\"mcmc\",\"iterations\":30000,\"seed\":1235,\"sh_degree\":3},\"recipe\":{\"id\":\"org.example.recipe.splat.splatx-mcmc\",\"version\":\"1.2.0\"}}",
+   "action_key": "sha256:386d7dc43c0b0a4823523a2e8b20758fad0c919cf3aa342acbeed6a6746368e7"
+  },
+  {
+   "name": "recipe_version_changes_key",
+   "derivation": {
+    "family": "org.prsn.method.static-splat",
+    "recipe": {
+     "id": "org.example.recipe.splat.splatx-mcmc",
+     "version": "1.2.1",
+     "rank": 40
+    },
+    "tool": {
+     "name": "example-writer",
+     "version": "0.3.0",
+     "build": "git:3f9c2e1",
+     "platform": "macOS 27.0 / Apple M3 / Metal 4"
+    },
+    "models": [
+     {
+      "role": "segmenter",
+      "key": "sam2.1-hiera-large",
+      "sha256": "9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344",
+      "license": "Apache-2.0"
+     },
+     {
+      "role": "head-model",
+      "key": "gnm-head-v3",
+      "sha256": "1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809",
+      "license": "Apache-2.0",
+      "use_restrictions": []
+     }
+    ],
+    "inputs": [
+     {
+      "capture": "sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce",
+      "look": "look-2026-10",
+      "era": "era-1",
+      "select": {
+       "streams": [
+        "d0/rgb.front",
+        "d0/depth.front"
+       ],
+       "phases": [
+        "orbit",
+        "face"
+       ],
+       "exclude_split": "holdout"
+      }
+     },
+     {
+      "cache": "sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e",
+      "role": "masks"
+     },
+     {
+      "entry": "face/geometry/gnm-head.fit.npz",
+      "sha256": "935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45",
+      "role": "init-mesh"
+     }
+    ],
+    "params": {
+     "iterations": 30000,
+     "sh_degree": 3,
+     "densify": "mcmc",
+     "cap": 600000,
+     "seed": 1234
+    },
+    "action_key": "sha256:ignored-when-computing",
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "split": "holdout",
+     "metric": "psnr",
+     "value": 31.8
+    },
+    "supersedes": null,
+    "created": "2026-11-14T03:12:09Z",
+    "duration_s": 1840,
+    "license_constraints": [
+     "no-pornographic-use"
+    ]
+   },
+   "preimage": "{\"family\":\"org.prsn.method.static-splat\",\"inputs\":[{\"cache\":\"sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e\",\"role\":\"masks\"},{\"capture\":\"sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce\",\"select\":{\"exclude_split\":\"holdout\",\"phases\":[\"orbit\",\"face\"],\"streams\":[\"d0/rgb.front\",\"d0/depth.front\"]}},{\"role\":\"init-mesh\",\"sha256\":\"935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45\"}],\"models\":[\"1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809\",\"9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344\"],\"params\":{\"cap\":600000,\"densify\":\"mcmc\",\"iterations\":30000,\"seed\":1234,\"sh_degree\":3},\"recipe\":{\"id\":\"org.example.recipe.splat.splatx-mcmc\",\"version\":\"1.2.1\"}}",
+   "action_key": "sha256:c638df9558429b04c1bf61405c84a064d79fe0fca2eaf01ef40bfe2d449aeba2"
+  },
+  {
+   "name": "select_change_changes_key",
+   "derivation": {
+    "family": "org.prsn.method.static-splat",
+    "recipe": {
+     "id": "org.example.recipe.splat.splatx-mcmc",
+     "version": "1.2.0",
+     "rank": 40
+    },
+    "tool": {
+     "name": "example-writer",
+     "version": "0.3.0",
+     "build": "git:3f9c2e1",
+     "platform": "macOS 27.0 / Apple M3 / Metal 4"
+    },
+    "models": [
+     {
+      "role": "segmenter",
+      "key": "sam2.1-hiera-large",
+      "sha256": "9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344",
+      "license": "Apache-2.0"
+     },
+     {
+      "role": "head-model",
+      "key": "gnm-head-v3",
+      "sha256": "1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809",
+      "license": "Apache-2.0",
+      "use_restrictions": []
+     }
+    ],
+    "inputs": [
+     {
+      "capture": "sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce",
+      "look": "look-2026-10",
+      "era": "era-1",
+      "select": {
+       "streams": [
+        "d0/rgb.front",
+        "d0/depth.front"
+       ],
+       "phases": [
+        "orbit"
+       ],
+       "exclude_split": "holdout"
+      }
+     },
+     {
+      "cache": "sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e",
+      "role": "masks"
+     },
+     {
+      "entry": "face/geometry/gnm-head.fit.npz",
+      "sha256": "935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45",
+      "role": "init-mesh"
+     }
+    ],
+    "params": {
+     "iterations": 30000,
+     "sh_degree": 3,
+     "densify": "mcmc",
+     "cap": 600000,
+     "seed": 1234
+    },
+    "action_key": "sha256:ignored-when-computing",
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "split": "holdout",
+     "metric": "psnr",
+     "value": 31.8
+    },
+    "supersedes": null,
+    "created": "2026-11-14T03:12:09Z",
+    "duration_s": 1840,
+    "license_constraints": [
+     "no-pornographic-use"
+    ]
+   },
+   "preimage": "{\"family\":\"org.prsn.method.static-splat\",\"inputs\":[{\"cache\":\"sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e\",\"role\":\"masks\"},{\"capture\":\"sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce\",\"select\":{\"exclude_split\":\"holdout\",\"phases\":[\"orbit\"],\"streams\":[\"d0/rgb.front\",\"d0/depth.front\"]}},{\"role\":\"init-mesh\",\"sha256\":\"935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45\"}],\"models\":[\"1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809\",\"9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344\"],\"params\":{\"cap\":600000,\"densify\":\"mcmc\",\"iterations\":30000,\"seed\":1234,\"sh_degree\":3},\"recipe\":{\"id\":\"org.example.recipe.splat.splatx-mcmc\",\"version\":\"1.2.0\"}}",
+   "action_key": "sha256:a49bb03af512f9cd1a907d60a10f157d43c29236bebbe6c960903f2443c846c8"
+  },
+  {
+   "name": "role_change_changes_key",
+   "derivation": {
+    "family": "org.prsn.method.static-splat",
+    "recipe": {
+     "id": "org.example.recipe.splat.splatx-mcmc",
+     "version": "1.2.0",
+     "rank": 40
+    },
+    "tool": {
+     "name": "example-writer",
+     "version": "0.3.0",
+     "build": "git:3f9c2e1",
+     "platform": "macOS 27.0 / Apple M3 / Metal 4"
+    },
+    "models": [
+     {
+      "role": "segmenter",
+      "key": "sam2.1-hiera-large",
+      "sha256": "9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344",
+      "license": "Apache-2.0"
+     },
+     {
+      "role": "head-model",
+      "key": "gnm-head-v3",
+      "sha256": "1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809",
+      "license": "Apache-2.0",
+      "use_restrictions": []
+     }
+    ],
+    "inputs": [
+     {
+      "capture": "sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce",
+      "look": "look-2026-10",
+      "era": "era-1",
+      "select": {
+       "streams": [
+        "d0/rgb.front",
+        "d0/depth.front"
+       ],
+       "phases": [
+        "orbit",
+        "face"
+       ],
+       "exclude_split": "holdout"
+      }
+     },
+     {
+      "cache": "sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e",
+      "role": "alpha"
+     },
+     {
+      "entry": "face/geometry/gnm-head.fit.npz",
+      "sha256": "935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45",
+      "role": "init-mesh"
+     }
+    ],
+    "params": {
+     "iterations": 30000,
+     "sh_degree": 3,
+     "densify": "mcmc",
+     "cap": 600000,
+     "seed": 1234
+    },
+    "action_key": "sha256:ignored-when-computing",
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "split": "holdout",
+     "metric": "psnr",
+     "value": 31.8
+    },
+    "supersedes": null,
+    "created": "2026-11-14T03:12:09Z",
+    "duration_s": 1840,
+    "license_constraints": [
+     "no-pornographic-use"
+    ]
+   },
+   "preimage": "{\"family\":\"org.prsn.method.static-splat\",\"inputs\":[{\"cache\":\"sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e\",\"role\":\"alpha\"},{\"capture\":\"sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce\",\"select\":{\"exclude_split\":\"holdout\",\"phases\":[\"orbit\",\"face\"],\"streams\":[\"d0/rgb.front\",\"d0/depth.front\"]}},{\"role\":\"init-mesh\",\"sha256\":\"935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45\"}],\"models\":[\"1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809\",\"9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344\"],\"params\":{\"cap\":600000,\"densify\":\"mcmc\",\"iterations\":30000,\"seed\":1234,\"sh_degree\":3},\"recipe\":{\"id\":\"org.example.recipe.splat.splatx-mcmc\",\"version\":\"1.2.0\"}}",
+   "action_key": "sha256:1311302d1f12609edb8c1823f3b0de60184254f5bc488db182072e7228a0cca5"
+  },
+  {
+   "name": "second_capture_input",
+   "derivation": {
+    "family": "org.prsn.method.static-splat",
+    "recipe": {
+     "id": "org.example.recipe.splat.splatx-mcmc",
+     "version": "1.2.0",
+     "rank": 40
+    },
+    "tool": {
+     "name": "example-writer",
+     "version": "0.3.0",
+     "build": "git:3f9c2e1",
+     "platform": "macOS 27.0 / Apple M3 / Metal 4"
+    },
+    "models": [
+     {
+      "role": "segmenter",
+      "key": "sam2.1-hiera-large",
+      "sha256": "9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344",
+      "license": "Apache-2.0"
+     },
+     {
+      "role": "head-model",
+      "key": "gnm-head-v3",
+      "sha256": "1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809",
+      "license": "Apache-2.0",
+      "use_restrictions": []
+     }
+    ],
+    "inputs": [
+     {
+      "capture": "sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce",
+      "look": "look-2026-10",
+      "era": "era-1",
+      "select": {
+       "streams": [
+        "d0/rgb.front",
+        "d0/depth.front"
+       ],
+       "phases": [
+        "orbit",
+        "face"
+       ],
+       "exclude_split": "holdout"
+      }
+     },
+     {
+      "cache": "sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e",
+      "role": "masks"
+     },
+     {
+      "entry": "face/geometry/gnm-head.fit.npz",
+      "sha256": "935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45",
+      "role": "init-mesh"
+     },
+     {
+      "capture": "sha256:890ef0a7c402e37e4bee1e1556ec641645e356d57dbebd697e346e2223e95c1f",
+      "look": "look-2026-12",
+      "era": "era-1",
+      "select": {
+       "streams": [
+        "d0/rgb.front"
+       ],
+       "phases": [
+        "orbit"
+       ],
+       "exclude_split": "holdout"
+      }
+     }
+    ],
+    "params": {
+     "iterations": 30000,
+     "sh_degree": 3,
+     "densify": "mcmc",
+     "cap": 600000,
+     "seed": 1234
+    },
+    "action_key": "sha256:ignored-when-computing",
+    "determinism": "seeded-nonbitwise",
+    "eval": {
+     "split": "holdout",
+     "metric": "psnr",
+     "value": 31.8
+    },
+    "supersedes": null,
+    "created": "2026-11-14T03:12:09Z",
+    "duration_s": 1840,
+    "license_constraints": [
+     "no-pornographic-use"
+    ]
+   },
+   "preimage": "{\"family\":\"org.prsn.method.static-splat\",\"inputs\":[{\"cache\":\"sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e\",\"role\":\"masks\"},{\"capture\":\"sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce\",\"select\":{\"exclude_split\":\"holdout\",\"phases\":[\"orbit\",\"face\"],\"streams\":[\"d0/rgb.front\",\"d0/depth.front\"]}},{\"capture\":\"sha256:890ef0a7c402e37e4bee1e1556ec641645e356d57dbebd697e346e2223e95c1f\",\"select\":{\"exclude_split\":\"holdout\",\"phases\":[\"orbit\"],\"streams\":[\"d0/rgb.front\"]}},{\"role\":\"init-mesh\",\"sha256\":\"935e758b257d15006e6e1a33ea16c3d930241f94afc1618abeea62387a1dca45\"}],\"models\":[\"1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809\",\"9f3c0b1e2d4a5b6c7d8e9f00112233445566778899aabbccddeeff0011223344\"],\"params\":{\"cap\":600000,\"densify\":\"mcmc\",\"iterations\":30000,\"seed\":1234,\"sh_degree\":3},\"recipe\":{\"id\":\"org.example.recipe.splat.splatx-mcmc\",\"version\":\"1.2.0\"}}",
+   "action_key": "sha256:0f9084d0872116dc0909a86ba267262af256e8277dbdfb9bc247b6c9d80b9d2f"
+  },
+  {
+   "name": "minimal_no_models_params_inputs",
+   "derivation": {
+    "family": "org.prsn.method.keyframes",
+    "recipe": {
+     "id": "org.example.recipe.keyframes.basic",
+     "version": "1.0.0"
+    }
+   },
+   "preimage": "{\"family\":\"org.prsn.method.keyframes\",\"inputs\":[],\"models\":[],\"params\":{},\"recipe\":{\"id\":\"org.example.recipe.keyframes.basic\",\"version\":\"1.0.0\"}}",
+   "action_key": "sha256:f3a14da1d900270764aa0483dbb0e6410b2e4801f08c0e730b53100fa08adb68"
+  },
+  {
+   "name": "null_models_params_inputs_same_as_absent",
+   "derivation": {
+    "family": "org.prsn.method.keyframes",
+    "recipe": {
+     "id": "org.example.recipe.keyframes.basic",
+     "version": "1.0.0"
+    },
+    "models": null,
+    "params": null,
+    "inputs": null
+   },
+   "preimage": "{\"family\":\"org.prsn.method.keyframes\",\"inputs\":[],\"models\":[],\"params\":{},\"recipe\":{\"id\":\"org.example.recipe.keyframes.basic\",\"version\":\"1.0.0\"}}",
+   "action_key": "sha256:f3a14da1d900270764aa0483dbb0e6410b2e4801f08c0e730b53100fa08adb68"
+  },
+  {
+   "name": "float_and_unicode_params",
+   "derivation": {
+    "family": "org.prsn.method.head-fit",
+    "recipe": {
+     "id": "org.example.recipe.headfit.gnm",
+     "version": "2.0.0"
+    },
+    "models": [
+     {
+      "sha256": "1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809"
+     }
+    ],
+    "params": {
+     "lr": 1e-07,
+     "scale": 2.0,
+     "w": 0.25,
+     "big": 1e+21,
+     "label": "caf\u00e9 \u2014 \ud83d\ude00",
+     "neg_zero": -0.0,
+     "list": [
+      1,
+      1.5,
+      "x"
+     ]
+    },
+    "inputs": [
+     {
+      "capture": "sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce",
+      "select": {
+       "phases": [
+        "expr"
+       ]
+      }
+     }
+    ]
+   },
+   "preimage": "{\"family\":\"org.prsn.method.head-fit\",\"inputs\":[{\"capture\":\"sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce\",\"select\":{\"phases\":[\"expr\"]}}],\"models\":[\"1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809\"],\"params\":{\"big\":1e+21,\"label\":\"caf\u00e9 \u2014 \ud83d\ude00\",\"list\":[1,1.5,\"x\"],\"lr\":1e-7,\"neg_zero\":0,\"scale\":2,\"w\":0.25},\"recipe\":{\"id\":\"org.example.recipe.headfit.gnm\",\"version\":\"2.0.0\"}}",
+   "action_key": "sha256:619b7961149196116d9441a0e022888e97468cf079220e3c32cab24b9b9b7936"
+  }
+ ],
+ "invalid": [
+  {
+   "name": "input_without_content_hash",
+   "derivation": {
+    "family": "f",
+    "recipe": {
+     "id": "r",
+     "version": "1"
+    },
+    "inputs": [
+     {
+      "entry": "face/x.npz",
+      "role": "init"
+     }
+    ]
+   }
+  },
+  {
+   "name": "input_with_two_content_hashes",
+   "derivation": {
+    "family": "f",
+    "recipe": {
+     "id": "r",
+     "version": "1"
+    },
+    "inputs": [
+     {
+      "capture": "sha256:625fcb38bcbfcb6262018bc7931edfd08ab4f2a8dcb145d49421bda7844b99ce",
+      "cache": "sha256:dd8e55d03c44b8f919052cab1ed7cb6ae07d7e078c093af8792aa69d499ee31e"
+     }
+    ]
+   }
+  },
+  {
+   "name": "input_content_hash_not_string",
+   "derivation": {
+    "family": "f",
+    "recipe": {
+     "id": "r",
+     "version": "1"
+    },
+    "inputs": [
+     {
+      "capture": 7
+     }
+    ]
+   }
+  },
+  {
+   "name": "missing_family",
+   "derivation": {
+    "recipe": {
+     "id": "r",
+     "version": "1"
+    }
+   }
+  },
+  {
+   "name": "missing_recipe_version",
+   "derivation": {
+    "family": "f",
+    "recipe": {
+     "id": "r"
+    }
+   }
+  },
+  {
+   "name": "model_without_sha256",
+   "derivation": {
+    "family": "f",
+    "recipe": {
+     "id": "r",
+     "version": "1"
+    },
+    "models": [
+     {
+      "key": "gnm-head-v3"
+     }
+    ]
+   }
+  },
+  {
+   "name": "params_not_object",
+   "derivation": {
+    "family": "f",
+    "recipe": {
+     "id": "r",
+     "version": "1"
+    },
+    "params": [
+     1,
+     2
+    ]
+   }
+  }
+ ]
+}

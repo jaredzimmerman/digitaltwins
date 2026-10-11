@@ -1,0 +1,172 @@
+{
+ "rule": "JSON matrices are 16 floats row by row (m00 m01 m02 m03 m10 ... m33); simd 4x4 is column-major in memory, serialisers transpose.",
+ "contract": "spec/frames-and-units.md \u00a73",
+ "tolerance": 1e-12,
+ "cases": [
+  {
+   "name": "sequential-entries",
+   "row_major": [
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    5.0,
+    6.0,
+    7.0,
+    8.0,
+    9.0,
+    10.0,
+    11.0,
+    12.0,
+    13.0,
+    14.0,
+    15.0,
+    16.0
+   ],
+   "column_major_memory": [
+    1.0,
+    5.0,
+    9.0,
+    13.0,
+    2.0,
+    6.0,
+    10.0,
+    14.0,
+    3.0,
+    7.0,
+    11.0,
+    15.0,
+    4.0,
+    8.0,
+    12.0,
+    16.0
+   ],
+   "elements": [
+    {
+     "row": 0,
+     "col": 3,
+     "value": 4.0
+    },
+    {
+     "row": 3,
+     "col": 0,
+     "value": 13.0
+    },
+    {
+     "row": 1,
+     "col": 2,
+     "value": 7.0
+    }
+   ],
+   "point_h": [
+    1.0,
+    2.0,
+    3.0,
+    1.0
+   ],
+   "expected_h": [
+    18.0,
+    46.0,
+    74.0,
+    102.0
+   ]
+  },
+  {
+   "name": "rz90-plus-translation",
+   "note": "T_a_from_b: rotate +90 deg about z then translate (1,2,3); p_a = T . p_b",
+   "row_major": [
+    0.0,
+    -1.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    2.0,
+    0.0,
+    0.0,
+    1.0,
+    3.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "column_major_memory": [
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    -1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    2.0,
+    3.0,
+    1.0
+   ],
+   "elements": [
+    {
+     "row": 0,
+     "col": 3,
+     "value": 1.0
+    },
+    {
+     "row": 1,
+     "col": 3,
+     "value": 2.0
+    },
+    {
+     "row": 2,
+     "col": 3,
+     "value": 3.0
+    },
+    {
+     "row": 0,
+     "col": 1,
+     "value": -1.0
+    },
+    {
+     "row": 1,
+     "col": 0,
+     "value": 1.0
+    }
+   ],
+   "point_h": [
+    1.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "expected_h": [
+    1.0,
+    3.0,
+    3.0,
+    1.0
+   ],
+   "inverse_row_major": [
+    0.0,
+    1.0,
+    0.0,
+    -2.0,
+    -1.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    1.0,
+    -3.0,
+    0,
+    0,
+    0,
+    1
+   ]
+  }
+ ]
+}

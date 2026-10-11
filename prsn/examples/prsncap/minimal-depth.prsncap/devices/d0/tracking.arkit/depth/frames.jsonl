@@ -1,0 +1,2 @@
+{"accuracy":"absolute","calib":"devices/d0/calib/depth.front.json","dropped":false,"dtype":"float32","filtered":false,"kind":"depth","path":"devices/d0/tracking.arkit/depth/expr/000000.exr","phase":"expr","pts_ns":259205000003000,"quality":"high","units":"m"}
+{"accuracy":"absolute","calib":"devices/d0/calib/depth.front.json","dropped":false,"dtype":"float32","filtered":false,"kind":"depth","path":"devices/d0/tracking.arkit/depth/expr/000001.exr","phase":"expr","pts_ns":259205016669667,"quality":"high","units":"m"}

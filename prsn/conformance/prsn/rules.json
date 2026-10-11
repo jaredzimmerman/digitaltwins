@@ -1,0 +1,208 @@
+{
+ "version": 1,
+ "spec": "spec/prsn.md (draft v1.1)",
+ "outcomes": {
+  "refuse": "a reader MUST refuse to load the file",
+  "invalid": "a validator MUST report `rule`; the file breaks exactly that rule",
+  "valid": "the file is valid; `why` says what a reader must do with it"
+ },
+ "valid": [
+  {
+   "id": "valid-v11",
+   "path": "examples/prsn/valid-v11",
+   "spec": "1.1"
+  },
+  {
+   "id": "valid-v10-legacy",
+   "path": "examples/prsn/valid-v10-legacy",
+   "spec": null
+  },
+  {
+   "id": "voice-v11",
+   "path": "examples/prsn/voice-v11",
+   "spec": "1.1"
+  }
+ ],
+ "cases": [
+  {
+   "id": "version-too-new",
+   "rule": "version",
+   "outcome": "refuse",
+   "why": "manifest.version is 2; a version-1 reader refuses it and shows the version"
+  },
+  {
+   "id": "version-not-integer",
+   "rule": "version",
+   "outcome": "refuse",
+   "why": "manifest.version is the string \"1\", not an integer"
+  },
+  {
+   "id": "critical-unknown-type",
+   "rule": "critical",
+   "outcome": "refuse",
+   "why": "a critical entry of a type the reader does not know"
+  },
+  {
+   "id": "spec11-missing-derivation",
+   "rule": "spec-fields",
+   "outcome": "invalid",
+   "why": "spec 1.1 geometry entry without `derivation`"
+  },
+  {
+   "id": "sample-missing-origin",
+   "rule": "spec-fields",
+   "outcome": "invalid",
+   "why": "samples/ entry without `origin`"
+  },
+  {
+   "id": "look-not-declared",
+   "rule": "looks-eras",
+   "outcome": "invalid",
+   "why": "entry `look` is not in manifest.looks"
+  },
+  {
+   "id": "generation-not-synthetic-capable",
+   "rule": "generation",
+   "outcome": "invalid",
+   "why": "generation/ entry without `synthetic_capable: true`"
+  },
+  {
+   "id": "sample-marked-synthetic",
+   "rule": "generation",
+   "outcome": "invalid",
+   "why": "samples/ entry whose origin says it was generated; generated output never enters samples/ or training/"
+  },
+  {
+   "id": "capture-ref-bad-hash",
+   "rule": "capture-ref",
+   "outcome": "invalid",
+   "why": "capture-ref manifest_sha256 is not a SHA-256"
+  },
+  {
+   "id": "bad-entry-path",
+   "rule": "paths",
+   "outcome": "invalid",
+   "why": "entry path has an upper-case segment"
+  },
+  {
+   "id": "path-listed-twice",
+   "rule": "paths",
+   "outcome": "invalid",
+   "why": "the same path appears twice in manifest.entries"
+  },
+  {
+   "id": "path-two-segments-not-index",
+   "rule": "paths",
+   "outcome": "invalid",
+   "why": "a sample at `face/f-0002.heic`: only modality-level index records (`<modality>/<name>.json`) may sit at depth 2"
+  },
+  {
+   "id": "path-one-segment",
+   "rule": "paths",
+   "outcome": "invalid",
+   "why": "a top-level entry other than person.json"
+  },
+  {
+   "id": "entries-unsorted",
+   "rule": "entry-order",
+   "outcome": "invalid",
+   "why": "spec 1.1 manifest whose entries are not sorted by path"
+  },
+  {
+   "id": "legacy-entries-unsorted",
+   "rule": null,
+   "outcome": "valid",
+   "why": "spec 1.0 manifest with unsorted entries: readers accept it and never depend on order"
+  },
+  {
+   "id": "person-legacy-shape",
+   "rule": null,
+   "outcome": "valid",
+   "why": "spec 1.0 person.json with `name`, an `ids` object and a `links` object: readers map it to the current shape"
+  },
+  {
+   "id": "spec11-geometry-missing-frame",
+   "rule": "spec-fields",
+   "outcome": "invalid",
+   "why": "spec 1.1 face geometry entry without `frame`"
+  },
+  {
+   "id": "mesh-missing-topology",
+   "rule": "type-fields",
+   "outcome": "invalid",
+   "why": "a mesh without its MUST field `topology`"
+  },
+  {
+   "id": "voice-float-without-source-format",
+   "rule": "type-fields",
+   "outcome": "invalid",
+   "why": "a voice sample captured as float without `source_format`"
+  },
+  {
+   "id": "person-missing-display-name",
+   "rule": "person",
+   "outcome": "invalid",
+   "why": "spec 1.1 person.json written in the legacy shape (`name`, no `display_name`)"
+  },
+  {
+   "id": "manifest-hash-mismatch",
+   "rule": "manifest-hash",
+   "outcome": "invalid",
+   "why": "an entry's bytes no longer match its sha256"
+  },
+  {
+   "id": "entry-missing",
+   "rule": "manifest-hash",
+   "outcome": "invalid",
+   "why": "a listed entry is not in the package"
+  },
+  {
+   "id": "signature-manifest-altered",
+   "rule": "signature",
+   "outcome": "invalid",
+   "why": "manifest changed after it was signed"
+  },
+  {
+   "id": "signature-key-id-mismatch",
+   "rule": "signature",
+   "outcome": "invalid",
+   "why": "signature verifies, but key_id is not the first 16 hex digits of SHA-256(public_key)"
+  },
+  {
+   "id": "signature-file-missing",
+   "rule": "signature",
+   "outcome": "invalid",
+   "why": "the manifest names signatures/manifest.sig but the package does not carry it"
+  },
+  {
+   "id": "unsigned",
+   "rule": null,
+   "outcome": "valid",
+   "why": "no signature block: valid, but integrity is unproven and tiers are not vouched for"
+  },
+  {
+   "id": "unlisted-file",
+   "rule": null,
+   "outcome": "valid",
+   "why": "a file the manifest does not list is ignored and never written back"
+  },
+  {
+   "id": "expired-entry",
+   "rule": null,
+   "outcome": "valid",
+   "why": "an entry past `expires` is dropped on load and not written again"
+  },
+  {
+   "id": "retired-scopes-key",
+   "rule": null,
+   "outcome": "valid",
+   "why": "top-level `scopes` from an early draft is dropped on load, not carried"
+  },
+  {
+   "id": "unknown-noncritical-type",
+   "rule": null,
+   "outcome": "valid",
+   "why": "an unknown non-critical type is skipped on read and copied through byte for byte on rewrite"
+  }
+ ]
+}

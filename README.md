@@ -1,26 +1,23 @@
 # digitaltwins
 
-Open file formats for portable digital twins of people: one file that holds a person's
-face, head and voice assets, together with the raw captures they were made from, so that
-any application can read them and newer methods can re-derive the assets without a rescan.
+Open file formats for portable digital twins of people. Each format is an
+application-independent file that any program can read and write, and that keeps the raw
+material its assets were made from, so newer methods can re-derive them later.
 
-| Format | What it is | Repository |
+| Format | What it is | Spec |
 |---|---|---|
-| `.prsn` | A person file: identity, face and head geometry, appearance (Gaussian splats, stills), voice, and the recipes that produced each asset | [`prsn/`](prsn) ([jaredzimmerman/prsn](https://github.com/jaredzimmerman/prsn)) |
-| `.prsncap` | A write-once capture file: the camera, depth, motion and audio streams from one capture session that `.prsn` assets are derived from | specified in [`prsn/spec/prsncap.md`](prsn/spec/prsncap.md) |
+| `.prsn` | A person: identity, face and head geometry, appearance (Gaussian splats, stills), voice, and the recipes that produced each asset. Its companion `.prsncap` holds the raw capture session. | [`prsn/`](prsn) |
+| `.styl` | Planned. | — |
+| `.scen` | Planned. | — |
 
-Each format lives in its own repository and is included here as a git submodule.
+Each format lives in its own folder with its specification, JSON Schemas, examples,
+conformance cases and tools.
 
-## Getting the formats
-
-```sh
-git clone --recurse-submodules https://github.com/jaredzimmerman/digitaltwins.git
-```
-
-If you already cloned without submodules:
+## Validating
 
 ```sh
-git submodule update --init
+cd prsn
+uv run --with jsonschema python tools/validate.py
 ```
 
 ## Status
@@ -29,4 +26,4 @@ Draft. The specifications may still change before a 1.x release; see each format
 
 ## Licence
 
-Apache License 2.0. See [LICENSE](LICENSE).
+Apache License 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

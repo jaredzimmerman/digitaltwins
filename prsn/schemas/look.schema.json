@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/look.schema.json",
+  "title": "manifest.looks[] item",
+  "description": "A named group of sessions sharing a state (hair, facial hair, glasses, makeup, clothing). Each session belongs to exactly one look; each look to exactly one era.",
+  "type": "object",
+  "required": ["id", "era", "sessions"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1, "not": {"const": "*"}},
+    "label": {"type": "string"},
+    "era": {"type": "string", "minLength": 1},
+    "default": {"type": "boolean"},
+    "sessions": {"type": "array", "items": {"$ref": "defs.schema.json#/$defs/contentId"}, "uniqueItems": true},
+    "state": {
+      "type": "object",
+      "properties": {
+        "hair_length": {"type": "string"},
+        "hair_colour": {"type": "string"},
+        "facial_hair": {"type": "string"},
+        "glasses": {"type": "boolean"},
+        "makeup": {"type": "boolean"},
+        "clothing": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "created": {"$ref": "defs.schema.json#/$defs/dateTime"}
+  },
+  "additionalProperties": true
+}

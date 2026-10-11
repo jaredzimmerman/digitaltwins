@@ -1,0 +1,61 @@
+{
+ "description": "Manifest build/sign/verify vector. Write `files` (UTF-8 `content`) into an empty directory package; build a manifest with `top_level` fields and one entry per file (type, media, extra fields as given; sha256 + bytes computed by streaming; entries sorted by path, UTF-8 byte order); set the signature block for the key with `seed`. Its canonical bytes must equal `canonical_manifest` and its SHA-256 `manifest_sha256` (content id `sha256:<hex>`). `signature` (hex, RFC 8032 deterministic, stored raw as signatures/manifest.sig) must verify over those bytes.",
+ "version": 1,
+ "seed": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+ "top_level": {
+  "format": "prsn",
+  "version": 1,
+  "spec": "1.1",
+  "created": "2026-10-02T18:04:11Z",
+  "generator": "example-writer 1.0.0",
+  "person": "person.json"
+ },
+ "files": [
+  {
+   "path": "face/capture-refs.json",
+   "content": "[]\n",
+   "type": "org.prsn.face.capture-ref",
+   "media": "application/json",
+   "extra": {}
+  },
+  {
+   "path": "face/geometry/empty.bin",
+   "content": "",
+   "type": "com.example.face.unknown",
+   "media": "application/octet-stream",
+   "extra": {}
+  },
+  {
+   "path": "face/samples/f-0001.txt",
+   "content": "not really a heic\n",
+   "type": "org.prsn.face.sample",
+   "media": "text/plain",
+   "extra": {
+    "pose": {
+     "yaw": -32.5,
+     "pitch": 4.25,
+     "roll": 1
+    },
+    "look": "look-2026-10a",
+    "era": "era-1",
+    "origin": {
+     "tier": "enrolled",
+     "how": "example-guided-v1",
+     "at": "2026-10-02T17:58:00Z"
+    }
+   }
+  },
+  {
+   "path": "person.json",
+   "content": "{\"id\":\"urn:uuid:00000000-0000-4000-8000-000000000001\",\"display_name\":\"Zo\u00eb Example\",\"aliases\":[],\"links\":[]}\n",
+   "type": "org.prsn.person",
+   "media": "application/json",
+   "extra": {
+    "critical": true
+   }
+  }
+ ],
+ "canonical_manifest": "{\"created\":\"2026-10-02T18:04:11Z\",\"entries\":[{\"bytes\":3,\"media\":\"application/json\",\"path\":\"face/capture-refs.json\",\"sha256\":\"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570\",\"type\":\"org.prsn.face.capture-ref\"},{\"bytes\":0,\"media\":\"application/octet-stream\",\"path\":\"face/geometry/empty.bin\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"type\":\"com.example.face.unknown\"},{\"bytes\":18,\"era\":\"era-1\",\"look\":\"look-2026-10a\",\"media\":\"text/plain\",\"origin\":{\"at\":\"2026-10-02T17:58:00Z\",\"how\":\"example-guided-v1\",\"tier\":\"enrolled\"},\"path\":\"face/samples/f-0001.txt\",\"pose\":{\"pitch\":4.25,\"roll\":1,\"yaw\":-32.5},\"sha256\":\"12a1614dc547416741876f87bc38cef3a80d056f001350a2661c9d846be20a0f\",\"type\":\"org.prsn.face.sample\"},{\"bytes\":109,\"critical\":true,\"media\":\"application/json\",\"path\":\"person.json\",\"sha256\":\"8c32c7aacd2f06659f191deb5298ec3f50f9bec9b03eed94463409553ec6cc8b\",\"type\":\"org.prsn.person\"}],\"format\":\"prsn\",\"generator\":\"example-writer 1.0.0\",\"person\":\"person.json\",\"signature\":{\"alg\":\"Ed25519\",\"key_id\":\"56475aa75463474c\",\"path\":\"signatures/manifest.sig\",\"public_key\":\"A6EHv/POEL4dcN0Y50vAmWfk1jCbpQ1fHdyGZBJVMbg=\"},\"spec\":\"1.1\",\"version\":1}",
+ "manifest_sha256": "56b2d82276f09f031c3d4c89b4c03d06c49696a4ac0dec18dfcf7efe6d12e44c",
+ "signature": "4d4a7f834fb83c7f05b4189c825768ddfabe1379400efdce56ca6d448e5c5ea9e167083193beb8b63d7acd5dd7bc1c65fa94e59e59897f28bb4074c1c691a203"
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/prsncap-manifest.schema.json",
+  "title": ".prsncap manifest.json",
+  "description": "The index of a capture package (spec/prsncap.md section 3). Same container rules as .prsn. `session.json` is listed and critical.",
+  "type": "object",
+  "required": ["format", "version", "created", "session", "entries"],
+  "properties": {
+    "format": {"const": "prsncap"},
+    "version": {"type": "integer", "minimum": 1},
+    "created": {"$ref": "defs.schema.json#/$defs/dateTime"},
+    "generator": {"type": "string"},
+    "session": {"const": "session.json"},
+    "entries": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/entry"},
+      "contains": {"required": ["path", "critical"], "properties": {"path": {"const": "session.json"}, "critical": {"const": true}}}
+    },
+    "signature": {"$ref": "defs.schema.json#/$defs/signature"}
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": ["path", "type", "media", "sha256", "bytes"],
+      "properties": {
+        "path": {"$ref": "defs.schema.json#/$defs/entryPath"},
+        "type": {"$ref": "defs.schema.json#/$defs/recordType"},
+        "media": {"type": "string"},
+        "sha256": {"$ref": "defs.schema.json#/$defs/sha256Hex"},
+        "bytes": {"type": "integer", "minimum": 0},
+        "critical": {"type": "boolean"},
+        "stream": {"type": "string", "pattern": "^d[0-9]+/[a-z0-9._-]+$"},
+        "device": {"type": "string", "pattern": "^d[0-9]+$"},
+        "phase": {"type": "string"}
+      },
+      "additionalProperties": true,
+      "not": {"description": "A capture holds no derived data.", "properties": {"derivation": true}, "required": ["derivation"]}
+    }
+  }
+}

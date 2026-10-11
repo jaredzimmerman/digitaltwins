@@ -1,0 +1,1 @@
+{"history":[],"scores":{"naming_rate":1,"similarity":0.81,"wer":0.04},"seed":{"path":"voice/generation/seed.flac","seconds":5,"source":"example:session-1@12.0","text":"the quick brown fox"},"synthetic_capable":true,"verified_by":{"engine":"example-tts","version":"1.0.0"}}

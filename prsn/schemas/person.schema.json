@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/person.schema.json",
+  "title": ".prsn person.json",
+  "description": "Who the file is about, in the current shape (writers always write this shape). Contains no biometrics. Other fields are allowed. Readers map the legacy shape (`name`, `ids` object, `links` object) to this one before validating (spec/prsn.md, person.json).",
+  "type": "object",
+  "required": [
+    "id",
+    "display_name"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "href"
+        ],
+        "properties": {
+          "rel": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "ids": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "scheme",
+          "value"
+        ],
+        "properties": {
+          "scheme": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

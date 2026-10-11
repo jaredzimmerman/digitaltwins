@@ -1,0 +1,1 @@
+{"holdout":[{"frames":[2],"phase":"setup","stream":"d0/depth.front"},{"frames":[2],"phase":"orbit","stream":"d0/depth.front"},{"frames":[],"phase":"expr","stream":"d0/tracking.arkit"}],"method":"seeded-stride","seed":20261002,"stills_stride":8,"stride":10,"version":1}

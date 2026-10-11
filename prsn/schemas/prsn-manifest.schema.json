@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jaredzimmerman/digitaltwins/prsn/schemas/prsn-manifest.schema.json",
+  "title": ".prsn manifest.json",
+  "description": "The index of a .prsn package (spec/prsn.md). Unknown top-level keys are allowed and are kept by readers on rewrite. A reader refuses `version` greater than the one it implements (1); that is a reader rule, not a schema rule.",
+  "type": "object",
+  "allOf": [
+    {"$ref": "#/$defs/header"},
+    {
+      "properties": {
+        "created": {"$ref": "defs.schema.json#/$defs/dateTime"},
+        "generator": {"type": "string"},
+        "person": {"$ref": "defs.schema.json#/$defs/entryPath"},
+        "budgets": {"$ref": "budgets.schema.json"},
+        "looks": {"type": "array", "items": {"$ref": "look.schema.json"}},
+        "eras": {"type": "array", "items": {"$ref": "era.schema.json"}},
+        "entries": {"type": "array", "items": {"$ref": "prsn-entry.schema.json"}},
+        "signature": {"$ref": "defs.schema.json#/$defs/signature"},
+        "redact": {"type": "boolean"}
+      },
+      "required": ["created", "person", "entries"]
+    },
+    {
+      "if": {"$ref": "#/$defs/spec11"},
+      "then": {"properties": {"entries": {"items": {"$ref": "prsn-entry.schema.json#/$defs/v11Fields"}}}}
+    }
+  ],
+  "$defs": {
+    "header": {
+      "type": "object",
+      "required": ["format", "version"],
+      "properties": {
+        "format": {"const": "prsn"},
+        "version": {"type": "integer", "minimum": 1},
+        "spec": {"type": "string", "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"}
+      }
+    },
+    "spec11": {
+      "description": "Matches a manifest whose `spec` is 1.1 or later.",
+      "required": ["spec"],
+      "properties": {"spec": {"type": "string", "pattern": "^(1\\.([1-9]\\d*)|[2-9]\\d*\\.\\d+|[1-9]\\d+\\.\\d+)$"}}
+    }
+  }
+}

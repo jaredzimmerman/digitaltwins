@@ -1,0 +1,41 @@
+{
+ "id": "org.example.recipe.toy.masks-basic",
+ "version": "1.0.0",
+ "family": "org.prsn.method.masks",
+ "rank": 10,
+ "produces": {
+  "type": "org.example.toy.masks",
+  "path_template": "toy/masks-{look}.bin"
+ },
+ "requires": {
+  "all": [
+   "rgb.*"
+  ]
+ },
+ "needs": {
+  "compute": "cpu",
+  "ram_gb": 2,
+  "disk_gb": 1,
+  "est_minutes": 2
+ },
+ "models": [],
+ "deps": [
+  {
+   "family": "org.prsn.method.static-splat",
+   "role": "splat",
+   "min_rank": 0
+  }
+ ],
+ "params_default": {
+  "threshold": 128
+ },
+ "determinism": "bitwise",
+ "eval": {
+  "metric": "none"
+ },
+ "executor": {
+  "kind": "engine",
+  "entry": "example.recipes.toy:run"
+ },
+ "license_constraints": []
+}

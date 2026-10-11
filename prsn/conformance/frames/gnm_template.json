@@ -1,0 +1,83 @@
+{
+ "rule": "T_headcanon_from_gnmtemplate for GNM Head v3 as shipped. gnm-template is metric with +y up, +z out of the face, +x the subject's left (the axes of head-canonical), so the transform is the translation that moves the midpoint of the template's two eye joints (the eyeball centres) to the origin; rotation identity, scale 1. Per-era head-canonical uses the same rule on the era's identity fit. Matrix is 16 floats row by row.",
+ "contract": "spec/frames-and-units.md §2 (gnm-template, head-canonical)",
+ "model": {
+  "key": "gnm-head-v3",
+  "version": "3.0",
+  "sha256": "61d78bbfb4ad8e0b38495804a4caef3214d3df00f8c3f68761e63b41ce3747eb",
+  "source": "https://huggingface.co/google/gnm-v3/resolve/main/v3_0/gnm_head.npz"
+ },
+ "tolerance": 1e-09,
+ "T_headcanon_from_gnmtemplate": [
+  1.0,
+  0.0,
+  0.0,
+  1.3592653e-05,
+  0.0,
+  1.0,
+  0.0,
+  -0.303139179945,
+  0.0,
+  0.0,
+  1.0,
+  -0.098933149129,
+  0.0,
+  0.0,
+  0.0,
+  1.0
+ ],
+ "cases": [
+  {
+   "name": "left eye centre (left_eye joint)",
+   "p_gnmtemplate": [
+    0.03083903715,
+    0.303164929152,
+    0.098887898028
+   ],
+   "expected_headcanon": [
+    0.030852629803,
+    2.5749207e-05,
+    -4.5251101e-05
+   ]
+  },
+  {
+   "name": "right eye centre (right_eye joint)",
+   "p_gnmtemplate": [
+    -0.030866222456,
+    0.303113430738,
+    0.09897840023
+   ],
+   "expected_headcanon": [
+    -0.030852629803,
+    -2.5749207e-05,
+    4.5251101e-05
+   ]
+  },
+  {
+   "name": "nose tip (head_sparse_68 landmark 30)",
+   "p_gnmtemplate": [
+    8.8041806e-05,
+    0.268344023526,
+    0.146500374228
+   ],
+   "expected_headcanon": [
+    0.000101634459,
+    -0.034795156419,
+    0.047567225099
+   ]
+  },
+  {
+   "name": "gnm-template origin",
+   "p_gnmtemplate": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "expected_headcanon": [
+    1.3592653e-05,
+    -0.303139179945,
+    -0.098933149129
+   ]
+  }
+ ]
+}

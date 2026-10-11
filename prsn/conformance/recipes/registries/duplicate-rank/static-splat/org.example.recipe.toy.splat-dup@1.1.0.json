@@ -1,0 +1,73 @@
+{
+ "id": "org.example.recipe.toy.splat-dup",
+ "version": "1.1.0",
+ "family": "org.prsn.method.static-splat",
+ "rank": 10,
+ "produces": {
+  "type": "org.example.toy.static-splat",
+  "path_template": "toy/static-splat-{look}.bin"
+ },
+ "requires": {
+  "all": [
+   "rgb.*",
+   "depth.truedepth",
+   "audio.48k?",
+   "stills.raw?"
+  ],
+  "any": [
+   "tracking.arkit-face",
+   "landmarks.any"
+  ],
+  "min_captures": 1
+ },
+ "needs": {
+  "compute": "metal",
+  "ram_gb": 12,
+  "disk_gb": 1,
+  "est_minutes": 40
+ },
+ "models": [
+  {
+   "role": "segmenter",
+   "key": "toy-seg",
+   "sha256": "b0904c31ea80f80790cfac62ac0fe82d0af6728b4a890c06f425ba684dd09104",
+   "license": "Apache-2.0",
+   "source": "https://example.invalid/toy-seg.bin"
+  }
+ ],
+ "deps": [
+  {
+   "family": "org.prsn.method.masks",
+   "role": "masks",
+   "min_rank": 10
+  }
+ ],
+ "params_default": {
+  "iterations": 30000,
+  "seed": 1,
+  "sh_degree": 3
+ },
+ "determinism": "seeded-nonbitwise",
+ "eval": {
+  "metric": "psnr",
+  "higher_is_better": true,
+  "min_improvement": 0.3,
+  "no_regression_per_capture": 0.5
+ },
+ "executor": {
+  "kind": "engine",
+  "entry": "example.recipes.toy:run"
+ },
+ "license_constraints": [],
+ "select": {
+  "streams": [
+   "d0/rgb.front",
+   "d0/depth.front"
+  ],
+  "phases": [
+   "orbit",
+   "face"
+  ],
+  "exclude_split": "holdout"
+ }
+}
