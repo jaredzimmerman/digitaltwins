@@ -1,6 +1,6 @@
 # The header figure
 
-A wooden artist's mannequin and its digital twin, the same figure drawn in dotted lines.
+A wooden artist's mannequin and its digital twin: the same figure as a sparse cloud of scattered dots, the way a scan would see it.
 
 `twin.html` is the interactive version, drawn with [Hairline](https://hairline.lucasmarkes.com). Download it and open it in a browser. Point at a limb on either figure: the mannequin raises it, and the twin follows a beat later. Press **play** to watch the tour. `twin.js` is the figure's source.
 

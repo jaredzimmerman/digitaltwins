@@ -878,7 +878,8 @@ var HL = (() => {
 <script type="module" id="hl-figure">
 /**
  * Twin: a wooden artist's mannequin on a plinth, and beside it its digital
- * twin, the same figure drawn in dots. The pointer picks a limb on either:
+ * twin, the same figure as a sparse cloud of scattered dots, the side facing
+ * us only, the way a scan sees it. The pointer picks a limb on either:
  * the mannequin raises it, and the twin follows a beat later. At rest the
  * mannequin stands in contrapposto, one hand on its hip, and its head takes
  * the bright stroke. The slider is the twin's lag, in ms.
@@ -888,7 +889,7 @@ var HL = (() => {
  * the rest pose, so a raised arm cannot move out from under the pointer.
  */
 const {
-  Cam, facing, fit, hull, lerp, poly, proj, prism, put, rad, rings, seg, solid,
+  Cam, facing, fit, hull, lerp, place, poly, proj, prism, put, rad, rings, rrect, seg, solid,
   tdone, tset, tval, tween, disposer, mk, pointer, register,
 } = HL;
 
@@ -924,6 +925,38 @@ function body(fig, t) {
   return parts;
 }
 
+// The twin's cloud: dots per square unit of surface, and the direction toward the camera.
+const DENS = 0.075, V = [FW[0] * 0.866, FW[1] * 0.866, 0.5];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dot3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], unit = (a) => a.map((x) => x / (Math.hypot(...a) || 1));
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+/** A seeded generator, so the cloud is the same scatter on every load. */
+const seeded = (s) => () => { s = (s + 0x6d2b79f5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+
+/** Dots over every part's surface: along it (t), round it (phi), over a cap (h, 0 on the side), a little off it (j). */
+function cloud(parts, R) {
+  const out = [];
+  parts.forEach((p, i) => {
+    const L = Math.hypot(...sub(p.q, p.p)), r = (p.ra + p.rb) / 2, side = 2 * Math.PI * r * L, caps = 4 * Math.PI * r * r;
+    // stratified: each dot takes its own slice along the part and jitters inside it, so no limb comes out bare
+    for (let n = Math.max(3, Math.round((side + caps) * DENS)), k = 0; k < n; k++) {
+      const onSide = R() < side / (side + caps), end = R() < 0.5 ? 0 : 1;
+      out.push({ i, t: onSide ? (k + R()) / n : end, h: onSide ? 0 : (end ? 1 : -1) * R(), phi: R() * 2 * Math.PI, j: (R() - 0.5) * 1.4, r: 0.6 + R() * 0.55, dim: R() < 0.22 });
+    }
+  });
+  return out;
+}
+
+/** Where a dot of the cloud sits on part p, and whether it faces the camera. */
+function onSurface(p, d) {
+  const L = Math.hypot(...sub(p.q, p.p)), a = L > 0.01 ? unit(sub(p.q, p.p)) : [0, 0, 1];
+  let e1 = cross(a, [FW[0], FW[1], 0]);
+  e1 = unit(Math.hypot(...e1) < 0.3 ? cross(a, [0, 0, 1]) : e1);
+  const e2 = cross(a, e1), s = Math.sqrt(1 - d.h * d.h), r = lerp(p.ra, p.rb, d.t) + d.j;
+  const n = [0, 1, 2].map((k) => e1[k] * Math.cos(d.phi) * s + e2[k] * Math.sin(d.phi) * s + a[k] * d.h);
+  const c = [0, 1, 2].map((k) => lerp(p.p[k], p.q[k], d.t) + n[k] * r);
+  return { c, seen: dot3(n, V) > -0.05 };
+}
+
 const ring24 = (c, r) => Array.from({ length: 24 }, (_, k) => [c[0] + r * Math.cos((k / 24) * 2 * Math.PI), c[1] + r * Math.sin((k / 24) * 2 * Math.PI)]);
 /** Nearer the camera is larger: across the ground toward the viewer, and up. Balls sit just over the limbs they join. */
 const depth = (p) => ((p.p[0] + p.q[0] + p.p[1] + p.q[1]) / 2) * 0.612 + ((p.p[2] + p.q[2]) / 2) * 0.5 + (p.ball ? 0.9 : 0);
@@ -935,8 +968,7 @@ function mount({ stage, svg, read }, value) {
   for (const fig of FIGS) for (const [a, f, z] of [[-16, -12, 0], [16, -12, 0], [-16, 26, 0], [16, 26, 0], [-24, 0, 122], [24, 0, 122]])
     box.push([AX[0] * (fig.a + a) + FW[0] * (fig.f + f), AX[1] * (fig.a + a) + FW[1] * (fig.f + f), z]);
   fit(C, box, 200, 166);
-  const P = proj(C), front = facing(C);
-  const turn = (ring, fig) => ring.map((q) => ({ ...q,
+  const P = proj(C), front = facing(C), turn = (ring, fig) => ring.map((q) => ({ ...q,
     u: AX[0] * (fig.a + q.u) + FW[0] * (fig.f + q.v), v: AX[1] * (fig.a + q.u) + FW[1] * (fig.f + q.v),
     nu: AX[0] * q.nu + FW[0] * q.nv, nv: AX[1] * q.nu + FW[1] * q.nv }));
 
@@ -944,18 +976,30 @@ function mount({ stage, svg, read }, value) {
   const figs = FIGS.map((fig, fi) => {
     const g = mk("g", {}, svg), twin = fi === 1;
     const [ring, inner] = rings(-15, -11, 15, 13, 6, 1.6);
+    const tw = Object.fromEntries(LIMBS.map((k) => [k, tween(0)]));
+    if (twin) {
+      // the plinth as a scatter along its top edge and down its near sides; the body as a cloud on its parts
+      const R = seeded(7), edge = rrect(-15, -11, 15, 13, 6, 8), dots = [], cum = [0];
+      edge.forEach((q, i) => { const n = edge[(i + 1) % edge.length]; cum.push(cum[i] + Math.hypot(n.u - q.u, n.v - q.v)); });
+      for (let k = 0; k < 150; k++) {
+        // a point spread evenly along the rim, not bunched at the corners where the ring has most samples
+        const at = R() * cum[edge.length], i = cum.findIndex((c) => c > at) - 1, q = edge[i], n = edge[(i + 1) % edge.length], w = (at - cum[i]) / (cum[i + 1] - cum[i]), top = R() < 0.65;
+        if (!top && q.nv < 0.14) continue; // the sides: only those facing us
+        const u = lerp(q.u, n.u, w) + (R() - 0.5) * 1.2, v = lerp(q.v, n.v, w) + (R() - 0.5) * 1.2, z = top ? 4 : R() * 4;
+        place(mk("circle", { r: 0.6 + R() * 0.5, class: R() < 0.3 ? "dot off" : "dot m" }, g), P(AX[0] * (fig.a + u) + FW[0] * (fig.f + v), AX[1] * (fig.a + u) + FW[1] * (fig.f + v), z));
+      }
+      for (const d of cloud(body(fig, rest), R)) dots.push({ ...d, el: mk("circle", { r: d.r, class: d.dim ? "dot off" : "dot m" }, g), seen: true });
+      return { fig, g, twin, dots, tw, drawn: "", rest: body(fig, rest) };
+    }
     const plinth = solid(g);
     put(plinth, prism(P, front, turn(ring, fig), turn(inner, fig), 0, 4));
-    if (twin) { plinth.sil.setAttribute("class", "dash"); plinth.cr.setAttribute("class", "nf dash"); }
     const els = body(fig, rest).map(() => {
       const pg = mk("g", {}, g);
-      return { g: pg, sil: mk("path", { class: twin ? "dash" : "sil" }, pg), cr: twin ? null : mk("path", { class: "nf lo" }, pg) };
+      return { g: pg, sil: mk("path", { class: "sil" }, pg), cr: mk("path", { class: "nf lo" }, pg) };
     });
-    const tw = Object.fromEntries(LIMBS.map((k) => [k, tween(0)]));
     return { fig, g, twin, els, tw, order: "", drawn: "", rest: body(fig, rest) };
   });
-  // A twin standing behind is painted first.
-  figs[0].g.after(figs[1].g);
+  figs[1].g.after(figs[0].g); // the twin stands behind: painted first
 
   function draw(F, now) {
     const t = Object.fromEntries(LIMBS.map((k) => [k, tval(F.tw[k], now)]));
@@ -963,10 +1007,14 @@ function mount({ stage, svg, read }, value) {
     if (key === F.drawn) return;
     F.drawn = key;
     const parts = body(F.fig, t);
+    if (F.twin) return F.dots.forEach((d) => {
+      const { c, seen } = onSurface(parts[d.i], d);
+      place(d.el, P(...c));
+      if (seen !== d.seen) { d.seen = seen; d.el.setAttribute("display", seen ? "inline" : "none"); }
+    });
     parts.forEach((p, i) => {
       const a = P(...p.p), b = P(...p.q), el = F.els[i];
       el.sil.setAttribute("d", poly(hull(ring24(a, p.ra * S).concat(ring24(b, p.rb * S)))));
-      if (!el.cr) return;
       // the crease: a dim line along the limb on its upper-left side, short of both ends
       const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
       if (p.ball || len < 4) { el.cr.setAttribute("d", ""); return; }
@@ -1017,16 +1065,12 @@ function mount({ stage, svg, read }, value) {
   setActive(null);
   bag.add(pointer(stage, { move: (p) => setActive(hit(p)), leave: () => setActive(null) }));
   bag.add(() => svg.replaceChildren());
-
-  return {
-    set: (v) => { lag = v; },
-    destroy: bag.dispose,
-  };
+  return { set: (v) => { lag = v; }, destroy: bag.dispose };
 }
 
 hairline({
   name: "twin",
-  means: "A wooden mannequin and its digital twin: point at a limb, the mannequin raises it, and the twin follows a beat later.",
+  means: "A wooden mannequin and its twin, a sparse cloud of dots: point at a limb, the mannequin raises it, and the twin follows a beat later.",
   rules: [1, 2, 6, 9],
   range: [60, 180, 320],
   tour: [[131, 96], [161, 160], [286, 216], null],

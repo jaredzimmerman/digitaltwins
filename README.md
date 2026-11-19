@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/header-dark.png">
-    <img alt="A wooden artist's mannequin on a plinth, and beside it its twin drawn in dotted lines." src="docs/images/header-light.png" width="880">
+    <img alt="A wooden artist's mannequin on a plinth, and beside it its twin as a sparse cloud of scattered dots." src="docs/images/header-light.png" width="880">
   </picture>
 </p>
 
