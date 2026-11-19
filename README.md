@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/header-dark.png">
+    <img alt="A wooden artist's mannequin on a plinth, and beside it its twin drawn in dotted lines." src="docs/images/header-light.png" width="880">
+  </picture>
+</p>
+
 # digitaltwins
 
 Open file formats for portable digital twins of people, visual styles and places. Each
